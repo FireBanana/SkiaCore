@@ -2,6 +2,7 @@
 using SkiaCore.Components;
 using SkiaSharp;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -10,8 +11,8 @@ namespace SkiaCore
 {
     internal static class GraphicsRenderer
     {
-        internal static SKSurface Surface;
-        static List<IComponent> _components = new List<IComponent>();
+        static SKSurface Surface;
+        static ConcurrentBag<IComponent> _components = new ConcurrentBag<IComponent>();
 
         internal static void Initialize(SKSurface surface)
         {

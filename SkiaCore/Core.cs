@@ -2,6 +2,7 @@
 using SkiaCore.Components;
 using SkiaSharp;
 using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -32,7 +33,19 @@ namespace SkiaCore
          1, 2, 3
         };
 
+        static ConcurrentQueue<Action> _dispatcherQueue = new ConcurrentQueue<Action>();
+
         public static void Initialize(int width, int height)
+        {
+            var thread = new Thread(() =>
+            {
+                Run(width, height);
+            });
+            thread.Start();
+
+        }
+
+        static void Run(int width, int height)
         {
             Width = width;
             Height = height;
@@ -132,28 +145,35 @@ namespace SkiaCore
 
                 GraphicsRenderer.Initialize(_surface);
 
-                var thread = new Thread(() =>
+                while (GLFW.glfwWindowShouldClose(window) == 0)
                 {
-                    while (GLFW.glfwWindowShouldClose(window) == 0)
+                    if(_dispatcherQueue.Count > 0)
                     {
-                        GraphicsRenderer.Update();
-                        InputHandler.Update(window);
+                        Action res;
 
-                        GL11.glDrawElements(GL11.GL_TRIANGLES, 6, GL11.GL_UNSIGNED_INT, IntPtr.Zero);
-                        GLFW.glfwSwapBuffers(window);
-                        GLFW.glfwPollEvents();
-                    }
-                });
+                        if (_dispatcherQueue.TryDequeue(out res))
+                            res.Invoke();
+                    }                        
 
-                thread.Start();
+                    GraphicsRenderer.Update();
+                    InputHandler.Update(window);
+
+                    GL11.glDrawElements(GL11.GL_TRIANGLES, 6, GL11.GL_UNSIGNED_INT, IntPtr.Zero);
+                    GLFW.glfwSwapBuffers(window);
+                    GLFW.glfwPollEvents();
+                }
+
             }
 
         }
 
         public static void AddRenderComponent(RenderFunction func)
         {
-            var component = func(Surface);
-            GraphicsRenderer.AddComponent(component);
+            _dispatcherQueue.Enqueue(new Action(() =>
+            {
+                var component = func(Surface);
+                GraphicsRenderer.AddComponent(component);
+            }));
         }
 
     }
