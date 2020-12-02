@@ -144,6 +144,7 @@ namespace SkiaCore
                 GLFW.glfwSwapInterval(1);
 
                 GraphicsRenderer.Initialize(_surface);
+                InputHandler.Initialize(window);
 
                 while (GLFW.glfwWindowShouldClose(window) == 0)
                 {
@@ -156,11 +157,11 @@ namespace SkiaCore
                     }                        
 
                     GraphicsRenderer.Update();
-                    InputHandler.Update(window);
+                    InputHandler.Update();
 
                     GL11.glDrawElements(GL11.GL_TRIANGLES, 6, GL11.GL_UNSIGNED_INT, IntPtr.Zero);
                     GLFW.glfwSwapBuffers(window);
-                    GLFW.glfwPollEvents();
+                    GLFW.glfwWaitEvents(); //Pauses execution until event received
                 }
 
             }
@@ -173,6 +174,9 @@ namespace SkiaCore
             {
                 var component = func(Surface);
                 GraphicsRenderer.AddComponent(component);
+
+                if (component is IInteractableComponent)
+                    InputHandler.AddComponent(component as IInteractableComponent);
             }));
         }
 

@@ -12,7 +12,7 @@ namespace SkiaCore
     internal static class GraphicsRenderer
     {
         static SKSurface Surface;
-        static ConcurrentBag<IComponent> _components = new ConcurrentBag<IComponent>();
+        static List<IComponent> _components = new List<IComponent>();
 
         internal static void Initialize(SKSurface surface)
         {
