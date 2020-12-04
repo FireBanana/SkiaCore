@@ -10,7 +10,7 @@ namespace SkiaCore
     {
         static double mouseX, mouseY;
         static bool isLeftMousePressed;
-        static List<IInteractableComponent> _components = new List<IInteractableComponent>();
+        static List<InteractableComponent> _components = new List<InteractableComponent>();
         static IntPtr _window;
 
         public static void Initialize(IntPtr window)
@@ -42,14 +42,28 @@ namespace SkiaCore
         {
             foreach (var component in _components)
             {
-                if (isLeftMousePressed && CheckIfInsideComponent(component))
+                if (CheckIfInsideComponent(component))
                 {
-                    component.OnClick();
+                    if (!component.WasMouseIn)
+                    {
+                        component.WasMouseIn = true;
+                        component.OnMouseEnter();
+                    }
+
+                    if (isLeftMousePressed)
+                    {
+                        component.OnClick();
+                    }
+                }
+                else if (component.WasMouseIn)
+                {
+                    component.WasMouseIn = false;
+                    component.OnMouseExit();
                 }
             }
         }
 
-        static bool CheckIfInsideComponent(IInteractableComponent component)
+        static bool CheckIfInsideComponent(InteractableComponent component)
         {
             if (mouseX > component.X &&
                 mouseX < component.X + component.Width &&
@@ -60,7 +74,7 @@ namespace SkiaCore
                 return false;
         }
 
-        public static void AddComponent(IInteractableComponent _input)
+        public static void AddComponent(InteractableComponent _input)
         {
             _components.Add(_input);
         }

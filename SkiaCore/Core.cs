@@ -13,7 +13,7 @@ namespace SkiaCore
 {
     public static class Core
     {
-        public delegate IComponent RenderFunction(SKSurface surface);
+        public delegate Component RenderFunction(SKSurface surface);
         private static SKSurface Surface { get; set; }
 
         static internal int Width = 800;
@@ -35,17 +35,17 @@ namespace SkiaCore
 
         static ConcurrentQueue<Action> _dispatcherQueue = new ConcurrentQueue<Action>();
 
-        public static void Initialize(int width, int height)
+        public static void Initialize(int width, int height, string title)
         {
             var thread = new Thread(() =>
             {
-                Run(width, height);
+                Run(width, height, title);
             });
             thread.Start();
 
         }
 
-        static void Run(int width, int height)
+        static void Run(int width, int height, string title)
         {
             Width = width;
             Height = height;
@@ -63,7 +63,7 @@ namespace SkiaCore
                 GL10.glHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
                 GL10.glHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_FALSE);
 
-                var window = GLFW.glfwCreateWindow(Width, Height, Encoding.ASCII.GetBytes("Sprite Editor"), IntPtr.Zero, IntPtr.Zero);
+                var window = GLFW.glfwCreateWindow(Width, Height, Encoding.ASCII.GetBytes(title), IntPtr.Zero, IntPtr.Zero);
                 GLFW.glfwMakeContextCurrent(window);
                 GL10.glViewport(0, 0, Width, Height);
 
@@ -175,8 +175,8 @@ namespace SkiaCore
                 var component = func(Surface);
                 GraphicsRenderer.AddComponent(component);
 
-                if (component is IInteractableComponent)
-                    InputHandler.AddComponent(component as IInteractableComponent);
+                if (component is InteractableComponent)
+                    InputHandler.AddComponent(component as InteractableComponent);
             }));
         }
 

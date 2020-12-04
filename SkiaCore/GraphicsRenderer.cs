@@ -12,7 +12,7 @@ namespace SkiaCore
     internal static class GraphicsRenderer
     {
         static SKSurface Surface;
-        static List<IComponent> _components = new List<IComponent>();
+        static List<Component> _components = new List<Component>();
 
         internal static void Initialize(SKSurface surface)
         {
@@ -28,7 +28,7 @@ namespace SkiaCore
             GL10.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, Core.Width, Core.Height, 0, GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE, Surface.PeekPixels().GetPixels());
         }
 
-        internal static void AddComponent(IComponent component)
+        internal static void AddComponent(Component component)
         {
             _components.Add(component);
         }
