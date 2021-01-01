@@ -21,5 +21,11 @@ namespace SkiaCore.Components
             Width = width;
             Height = height;
         }
+
+        protected void Translate(int posX, int posY)
+        {
+            X = posX;
+            Y = posY;
+        }
     }
 }

@@ -58,7 +58,7 @@ namespace SkiaCore
                         _currentSelectedComponent = component;
                         isLeftMousePressed = false;
                     }
-                    else if (isLeftMouseReleased)
+                    else if (isLeftMouseReleased && _currentSelectedComponent == component)
                     {
                         component.OnRelease();
                         _currentSelectedComponent = null;
@@ -78,9 +78,13 @@ namespace SkiaCore
                         isLeftMouseReleased = false;
                         _currentSelectedComponent.OnRelease();
                         _currentSelectedComponent = null;
-                    }
+                    }                    
                 }
+         
             }
+
+            isLeftMousePressed = false;
+            isLeftMouseReleased = false;
         }
 
         static bool CheckIfInsideComponent(InteractableComponent component)
