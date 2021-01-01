@@ -6,14 +6,16 @@ using System.Diagnostics;
 
 namespace SkiaCore
 {
-    internal static class InputHandler
+    public static class InputHandler
     {
-        static double mouseX, mouseY;
-        static bool isLeftMousePressed;
+        public static double MouseX, MouseY;
+        static bool isLeftMousePressed, isLeftMouseReleased; //TODO: Turn to struct
         static List<InteractableComponent> _components = new List<InteractableComponent>();
         static IntPtr _window;
 
-        public static void Initialize(IntPtr window)
+        static InteractableComponent _currentSelectedComponent = null;
+
+        internal static void Initialize(IntPtr window)
         {
             _window = window;
             GLFW.glfwSetMouseButtonCallback(window, (wind, button, action, mods) =>
@@ -26,19 +28,19 @@ namespace SkiaCore
                     }
                     else if (action == GLFW.GLFW_RELEASE)
                     {
-                        isLeftMousePressed = false;
+                        isLeftMouseReleased = true;
                     }
                 }
             });
 
             GLFW.glfwSetCursorPosCallback(window, (wind, x, y) =>
             {
-                mouseX = x;
-                mouseY = y;
+                MouseX = x;
+                MouseY = y;
             });
         }
 
-        public static void Update()
+        internal static void Update()
         {
             foreach (var component in _components)
             {
@@ -53,28 +55,46 @@ namespace SkiaCore
                     if (isLeftMousePressed)
                     {
                         component.OnClick();
+                        _currentSelectedComponent = component;
+                        isLeftMousePressed = false;
+                    }
+                    else if (isLeftMouseReleased)
+                    {
+                        component.OnRelease();
+                        _currentSelectedComponent = null;
+                        isLeftMouseReleased = false;
                     }
                 }
-                else if (component.WasMouseIn)
+                else if (component.WasMouseIn || _currentSelectedComponent != null)
                 {
-                    component.WasMouseIn = false;
-                    component.OnMouseExit();
+                    if (component.WasMouseIn)
+                    {
+                        component.WasMouseIn = false;
+                        component.OnMouseExit();
+                    }
+
+                    if(_currentSelectedComponent != null && isLeftMouseReleased)
+                    {
+                        isLeftMouseReleased = false;
+                        _currentSelectedComponent.OnRelease();
+                        _currentSelectedComponent = null;
+                    }
                 }
             }
         }
 
         static bool CheckIfInsideComponent(InteractableComponent component)
         {
-            if (mouseX > component.X &&
-                mouseX < component.X + component.Width &&
-                mouseY > component.Y &&
-                mouseY < component.Y + component.Height)
+            if (MouseX > component.X &&
+                MouseX < component.X + component.Width &&
+                MouseY > component.Y &&
+                MouseY < component.Y + component.Height)
                 return true;
             else
                 return false;
         }
 
-        public static void AddComponent(InteractableComponent _input)
+        internal static void AddComponent(InteractableComponent _input)
         {
             _components.Add(_input);
         }

@@ -17,7 +17,7 @@ namespace SkiaCore
         private static SKSurface Surface { get; set; }
 
         static internal int Width = 800;
-        static internal int Height = 600;
+        static internal int Height = 600;        
 
         static float[] vertices =
         {
@@ -33,19 +33,25 @@ namespace SkiaCore
          1, 2, 3
         };
 
+        public struct SkiaSharpOptions
+        {
+            public bool IsBorderless;
+            public bool IsNotResizable;
+        } 
+
         static ConcurrentQueue<Action> _dispatcherQueue = new ConcurrentQueue<Action>();
 
-        public static void Initialize(int width, int height, string title)
+        public static void Initialize(int width, int height, string title, SkiaSharpOptions options = new SkiaSharpOptions())
         {
             var thread = new Thread(() =>
             {
-                Run(width, height, title);
+                Run(width, height, title, options);
             });
             thread.Start();
 
         }
 
-        static void Run(int width, int height, string title)
+        static void Run(int width, int height, string title, SkiaSharpOptions options)
         {
             Width = width;
             Height = height;
@@ -58,14 +64,19 @@ namespace SkiaCore
                 var canvas = _surface.Canvas;
 
                 GLFW.glfwInit();
-                GL10.glHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
-                GL10.glHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
-                GL10.glHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
-                GL10.glHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_FALSE);
+                GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
+                GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
+                GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
+
+                SetUpOptions(options);
 
                 var window = GLFW.glfwCreateWindow(Width, Height, Encoding.ASCII.GetBytes(title), IntPtr.Zero, IntPtr.Zero);
                 GLFW.glfwMakeContextCurrent(window);
                 GL10.glViewport(0, 0, Width, Height);
+
+                #region CALLBACKS
+                GLFW.glfwSetWindowCloseCallback(window, (win) => { GLFW.glfwTerminate(); Environment.Exit(0); });
+                #endregion
 
                 uint[] VBO = { 0 };
                 uint[] VAO = { 0 };
@@ -168,6 +179,12 @@ namespace SkiaCore
 
         }
 
+        static void SetUpOptions(SkiaSharpOptions options)
+        {
+            GLFW.glfwWindowHint(GLFW.GLFW_DECORATED, options.IsBorderless ? GLFW.GLFW_FALSE : GLFW.GLFW_TRUE);
+            GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, options.IsNotResizable ? GLFW.GLFW_FALSE : GLFW.GLFW_TRUE);
+        }
+        
         public static void AddRenderComponent(RenderFunction func)
         {
             _dispatcherQueue.Enqueue(new Action(() =>
