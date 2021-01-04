@@ -39,6 +39,7 @@ namespace SkiaCore
         {
             public bool IsBorderless;
             public bool IsNotResizable;
+            public SKColor BackgroundColor;
         } 
 
         static ConcurrentQueue<Action> _dispatcherQueue = new ConcurrentQueue<Action>();
@@ -77,7 +78,7 @@ namespace SkiaCore
                 GL10.glViewport(0, 0, Width, Height);
 
                 #region CALLBACKS
-                GLFW.glfwSetWindowCloseCallback(Window, (win) => { GLFW.glfwTerminate(); Environment.Exit(0); });
+                GLFW.glfwSetWindowCloseCallback(Window, (win) => { GLFW.glfwTerminate(); Environment.Exit(0); });                
                 #endregion
 
                 uint[] VBO = { 0 };
@@ -156,7 +157,7 @@ namespace SkiaCore
 
                 GLFW.glfwSwapInterval(1);
 
-                GraphicsRenderer.Initialize(_surface);
+                GraphicsRenderer.Initialize(_surface, options.BackgroundColor);
                 InputHandler.Initialize(Window);
 
                 while (GLFW.glfwWindowShouldClose(Window) == 0)

@@ -13,15 +13,17 @@ namespace SkiaCore
     {
         static SKSurface Surface;
         static List<Component> _components = new List<Component>();
+        static SKColor _backgroundColor;
 
-        internal static void Initialize(SKSurface surface)
+        internal static void Initialize(SKSurface surface, SKColor color = default(SKColor))
         {
             Surface = surface;
+            _backgroundColor = color;
         }
 
         internal static void Update()
         {
-            Surface.Canvas.Clear(SKColors.CadetBlue);
+            Surface.Canvas.Clear(_backgroundColor);
 
             foreach (var component in _components) component.Render();
 

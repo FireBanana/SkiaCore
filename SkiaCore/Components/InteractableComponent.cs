@@ -9,7 +9,10 @@ namespace SkiaCore.Components
         public abstract void OnMouseEnter();
         public abstract void OnMouseExit();
 
-        //TODO Create OnDrag event
+        public virtual void OnKeyPress(string key)
+        {
+
+        }
 
         public InteractableComponent(SKSurface surface, int x, int y, int width, int height, params object[] args) : base(surface, x, y, width, height, args)
         {

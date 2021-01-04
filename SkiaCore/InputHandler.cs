@@ -3,6 +3,7 @@ using SkiaCore.Components;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text;
 
 namespace SkiaCore
 {
@@ -14,6 +15,7 @@ namespace SkiaCore
         static IntPtr _window;
 
         static InteractableComponent _currentSelectedComponent = null;
+        static InteractableComponent _currentFocusedComponent;
 
         internal static void Initialize(IntPtr window)
         {
@@ -38,6 +40,23 @@ namespace SkiaCore
                 MouseX = x;
                 MouseY = y;
             });
+
+            GLFW.glfwSetKeyCallback(window, (wind, key, scancode, action, mods) =>
+            {
+                if(_currentFocusedComponent != null) //Will not allow for hot key usage, change in future
+                {
+                    switch (action)
+                    {
+                        case GLFW.GLFW_PRESS:
+                            _currentFocusedComponent.OnKeyPress(((char)key).ToString());
+                            break;
+                        case GLFW.GLFW_REPEAT:
+                            break;
+                        case GLFW.GLFW_RELEASE:
+                            break;
+                    }
+                }
+            });
         }
 
         internal static void Update()
@@ -56,6 +75,7 @@ namespace SkiaCore
                     {
                         component.OnClick();
                         _currentSelectedComponent = component;
+                        _currentFocusedComponent = component;
                         isLeftMousePressed = false;
                     }
                     else if (isLeftMouseReleased && _currentSelectedComponent == component)
@@ -65,6 +85,10 @@ namespace SkiaCore
                         isLeftMouseReleased = false;
                     }
                 }
+                else if (isLeftMousePressed)
+                {
+                    _currentFocusedComponent = null;
+                }
                 else if (component.WasMouseIn || _currentSelectedComponent != null)
                 {
                     if (component.WasMouseIn)
@@ -73,15 +97,16 @@ namespace SkiaCore
                         component.OnMouseExit();
                     }
 
-                    if(_currentSelectedComponent != null && isLeftMouseReleased)
+                    if (_currentSelectedComponent != null && isLeftMouseReleased)
                     {
                         isLeftMouseReleased = false;
                         _currentSelectedComponent.OnRelease();
                         _currentSelectedComponent = null;
-                    }                    
+                    }
                 }
-         
-            }
+
+
+            }            
 
             isLeftMousePressed = false;
             isLeftMouseReleased = false;
