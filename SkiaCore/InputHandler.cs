@@ -10,12 +10,10 @@ namespace SkiaCore
     public static class InputHandler
     {
         public static double MouseX, MouseY;
-        static bool isLeftMousePressed, isLeftMouseReleased; //TODO: Turn to struct
         static List<InteractableComponent> _components = new List<InteractableComponent>();
         static IntPtr _window;
 
-        static InteractableComponent _currentSelectedComponent = null;
-        static InteractableComponent _currentFocusedComponent;
+        static InteractableComponent _currentMouseTargetedComponent = null;
 
         internal static void Initialize(IntPtr window)
         {
@@ -26,11 +24,13 @@ namespace SkiaCore
                 {
                     if (action == GLFW.GLFW_PRESS)
                     {
-                        isLeftMousePressed = true;
+                        if (_currentMouseTargetedComponent != null)
+                            _currentMouseTargetedComponent.OnClick();
                     }
                     else if (action == GLFW.GLFW_RELEASE)
                     {
-                        isLeftMouseReleased = true;
+                        if (_currentMouseTargetedComponent != null)
+                            _currentMouseTargetedComponent.OnRelease();
                     }
                 }
             });
@@ -39,16 +39,41 @@ namespace SkiaCore
             {
                 MouseX = x;
                 MouseY = y;
+
+                foreach(var component in _components)
+                {
+                    if(component.IsUnderCursor((int)x, (int)y))
+                    {
+                        if (_currentMouseTargetedComponent == null)
+                        {
+                            _currentMouseTargetedComponent = component;
+                            component.OnMouseEnter();                            
+                        }
+                        else if(_currentMouseTargetedComponent != component)
+                        {
+                            _currentMouseTargetedComponent.OnMouseExit();
+                            component.OnMouseEnter();
+                            _currentMouseTargetedComponent = component;                            
+                        }
+
+                        return;
+                    }
+                }
+
+                if (_currentMouseTargetedComponent != null)
+                {
+                    _currentMouseTargetedComponent.OnMouseExit();
+                    _currentMouseTargetedComponent = null;
+                }
             });
 
             GLFW.glfwSetKeyCallback(window, (wind, key, scancode, action, mods) =>
             {
-                if(_currentFocusedComponent != null) //Will not allow for hot key usage, change in future
+                
                 {
                     switch (action)
                     {
                         case GLFW.GLFW_PRESS:
-                            _currentFocusedComponent.OnKeyPress(((char)key).ToString());
                             break;
                         case GLFW.GLFW_REPEAT:
                             break;
@@ -61,66 +86,7 @@ namespace SkiaCore
 
         internal static void Update()
         {
-            foreach (var component in _components)
-            {
-                if (CheckIfInsideComponent(component))
-                {
-                    if (!component.WasMouseIn)
-                    {
-                        component.WasMouseIn = true;
-                        component.OnMouseEnter();
-                    }
 
-                    if (isLeftMousePressed)
-                    {
-                        component.OnClick();
-                        _currentSelectedComponent = component;
-                        _currentFocusedComponent = component;
-                        isLeftMousePressed = false;
-                    }
-                    else if (isLeftMouseReleased && _currentSelectedComponent == component)
-                    {
-                        component.OnRelease();
-                        _currentSelectedComponent = null;
-                        isLeftMouseReleased = false;
-                    }
-                }
-                else if (isLeftMousePressed)
-                {
-                    _currentFocusedComponent = null;
-                }
-                else if (component.WasMouseIn || _currentSelectedComponent != null)
-                {
-                    if (component.WasMouseIn)
-                    {
-                        component.WasMouseIn = false;
-                        component.OnMouseExit();
-                    }
-
-                    if (_currentSelectedComponent != null && isLeftMouseReleased)
-                    {
-                        isLeftMouseReleased = false;
-                        _currentSelectedComponent.OnRelease();
-                        _currentSelectedComponent = null;
-                    }
-                }
-
-
-            }            
-
-            isLeftMousePressed = false;
-            isLeftMouseReleased = false;
-        }
-
-        static bool CheckIfInsideComponent(InteractableComponent component)
-        {
-            if (MouseX > component.X &&
-                MouseX < component.X + component.Width &&
-                MouseY > component.Y &&
-                MouseY < component.Y + component.Height)
-                return true;
-            else
-                return false;
         }
 
         internal static void AddComponent(InteractableComponent _input)
