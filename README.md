@@ -148,3 +148,4 @@ namespace SpriteEditor.Components
 ## Dependencies
 - Arqan (https://github.com/TheBoneJarmer/Arqan)
 - SkiaSharp
+- Visual Studio 2019
