@@ -5,6 +5,7 @@ namespace SkiaCore.Components
 {
     public abstract class Component
     {
+        public int Id;
         public SKSurface Surface { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
@@ -20,6 +21,7 @@ namespace SkiaCore.Components
             Y = y;
             Width = width;
             Height = height;
+            Id = Core.IdCounter++;
         }
 
         protected void Translate(int posX, int posY)
