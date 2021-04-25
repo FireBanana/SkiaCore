@@ -1,10 +1,13 @@
 ﻿using Arqan;
 using SkiaCore.Components;
+using SkiaCore.SCGUI;
 using SkiaSharp;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,6 +33,7 @@ namespace SkiaCore
         } 
 
         static ConcurrentQueue<Action> _dispatcherQueue = new ConcurrentQueue<Action>();
+        static List<Layout> _layoutStack = new List<Layout>();
 
         public static void Initialize(int width, int height, string title, SkiaCoreOptions options = new SkiaCoreOptions())
         {
@@ -68,6 +72,8 @@ namespace SkiaCore
                 GraphicsRenderer.Initialize(_surface, options.BackgroundColor);
                 InputHandler.Initialize(Window);
 
+                _layoutStack.Add(new StackLayout());
+
                 while (GLFW.glfwWindowShouldClose(Window) == 0)
                 {
                     if(_dispatcherQueue.Count > 0)
@@ -102,6 +108,7 @@ namespace SkiaCore
             {
                 var component = func(Surface);
                 GraphicsRenderer.AddComponent(component);
+                _layoutStack.Last().AddChild(component);
 
                 if (component is InteractableComponent)
                     InputHandler.AddComponent(component as InteractableComponent);

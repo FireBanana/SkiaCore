@@ -14,20 +14,12 @@ namespace SkiaCore.Components
         internal bool WasMouseIn { get; set; } //Check state of mouse in previous frame
 
         public abstract void Render();
-        public Component(SKSurface surface, int x, int y, int width, int height, params object[] args)
+        public Component(SKSurface surface, int width, int height, params object[] args)
         {
             Surface = surface;
-            X = x;
-            Y = y;
             Width = width;
             Height = height;
             Id = Core.IdCounter++;
-        }
-
-        protected void Translate(int posX, int posY)
-        {
-            X = posX;
-            Y = posY;
         }
     }
 }

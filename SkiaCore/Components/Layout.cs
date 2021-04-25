@@ -6,29 +6,33 @@ using System.Collections.Specialized;
 using SkiaCore.Common;
 using SkiaSharp;
 
-namespace SkiaCore.SCGUI
+namespace SkiaCore.Components
 {
-    public abstract class Layout : Component
+    public abstract class Layout
     {
+        public int Id;
+        public SKSurface Surface { get; set; }
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+
         //Data
-        public int Padding { get; set; } = 0;
-        public List<Component> ComponentStack = new List<Component>();
+        public Point Padding { get; set; } = new Point { X = 10, Y = 10};
+        public Point ItemPadding { get; set; } = new Point { X = 100, Y = 100 };
+
+        protected List<Component> ComponentStack = new List<Component>();
 
         //Abstract
 
         public abstract void CalculateItemsPosition();
 
         //Methods
-
-        protected Layout(SKSurface surface, int x, int y, int width, int height, params object[] args) : base(surface, x, y, width, height, args)
-        {
-
-        }
-        public void PushToStack(Component component)
+        public virtual void AddChild(Component component)
         {
             ComponentStack.Add(component);
         }
-        public void RemoveFromStack(Component component)
+        public virtual void RemoveChild(Component component)
         {
             for(int i = 0; i < ComponentStack.Count; i++)
             {
