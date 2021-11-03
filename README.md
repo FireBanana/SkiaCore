@@ -3,6 +3,8 @@
 SkiaCore is a library that uses OpenGL(through the Arqan.x64 GLFW wrapper) to render SkiaSharp in a window. It is currently set-up for Windows only but can be easily expanded with
 the alternate Arqan wrappers. This is still in experimental stages and only provides a simple interface for creating UI
 
+<b>Note: This library is currently in Beta</b>
+
 ## Getting Started
 
 It's quite easy to get started with SkiaCore. First reference the project into your main project, and then initialize:
