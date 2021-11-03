@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30611.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkiaCore", "SkiaCore\SkiaCore.csproj", "{441F3FB6-69D5-4DE3-8AA5-6A29DDC6B062}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCTest", "..\SCTest\SCTest\SCTest.csproj", "{02F0A393-AFAE-4B6B-A0D4-9E6D5F06D41B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkiaTest", "..\SkiaTest\SkiaTest\SkiaTest.csproj", "{8EFEDAC2-F68F-4FD0-9ACB-D0FB8AE61BD7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{441F3FB6-69D5-4DE3-8AA5-6A29DDC6B062}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{441F3FB6-69D5-4DE3-8AA5-6A29DDC6B062}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{441F3FB6-69D5-4DE3-8AA5-6A29DDC6B062}.Release|Any CPU.Build.0 = Release|Any CPU
-		{02F0A393-AFAE-4B6B-A0D4-9E6D5F06D41B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{02F0A393-AFAE-4B6B-A0D4-9E6D5F06D41B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{02F0A393-AFAE-4B6B-A0D4-9E6D5F06D41B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{02F0A393-AFAE-4B6B-A0D4-9E6D5F06D41B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EFEDAC2-F68F-4FD0-9ACB-D0FB8AE61BD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EFEDAC2-F68F-4FD0-9ACB-D0FB8AE61BD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EFEDAC2-F68F-4FD0-9ACB-D0FB8AE61BD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EFEDAC2-F68F-4FD0-9ACB-D0FB8AE61BD7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

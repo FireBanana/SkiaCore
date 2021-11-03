@@ -64,7 +64,9 @@ namespace SkiaCore
                 Window = GLInitializer.CreateWindowContext(width, height, title);
 
                 #region CALLBACKS
+
                 GLFW.glfwSetWindowCloseCallback(Window, (win) => { GLFW.glfwTerminate(); Environment.Exit(0); });
+
                 #endregion
 
                 GLInitializer.Execute(_surface);

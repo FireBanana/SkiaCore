@@ -14,6 +14,7 @@ namespace SkiaCore
         static IntPtr _window;
 
         static InteractableComponent _currentMouseTargetedComponent = null;
+        static InteractableComponent _currentSelectedComponent = null;
 
         internal static void Initialize(IntPtr window)
         {
@@ -25,12 +26,19 @@ namespace SkiaCore
                     if (action == GLFW.GLFW_PRESS)
                     {
                         if (_currentMouseTargetedComponent != null)
-                            _currentMouseTargetedComponent.OnClick();
+                        {
+                            _currentSelectedComponent = _currentMouseTargetedComponent;
+                            _currentSelectedComponent.OnClick();
+                        }
                     }
                     else if (action == GLFW.GLFW_RELEASE)
                     {
-                        if (_currentMouseTargetedComponent != null)
-                            _currentMouseTargetedComponent.OnRelease();
+                        if (_currentSelectedComponent != null)
+                        {
+                            _currentSelectedComponent.OnRelease();                            
+                        }
+
+                        _currentSelectedComponent = null;
                     }
                 }
             });
