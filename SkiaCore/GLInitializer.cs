@@ -1,4 +1,5 @@
 ﻿using Arqan;
+using SkiaCore.Common;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
@@ -10,10 +11,10 @@ namespace SkiaCore
     {
         static float[] vertices =
         {
-         1f,  1f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-         1f, -1f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+          1f,  1f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+          1f, -1f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
          -1f, -1f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-         -1f, 1f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f
+         -1f,  1f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f
         };
 
         static uint[] indices =
@@ -27,7 +28,7 @@ namespace SkiaCore
         static uint[] EBO = { 0 };
         static uint[] texture = { 0 };
 
-        public static void InitializeWindow()
+        internal static void InitializeWindow()
         {
             GLFW.glfwInit();
             GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -35,15 +36,13 @@ namespace SkiaCore
             GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
         }
 
-        public static IntPtr CreateWindowContext(int width, int height, string title)
+        internal static void SetUpOptions(SkiaCoreOptions options)
         {
-            var win_ptr = GLFW.glfwCreateWindow(width, height, Encoding.ASCII.GetBytes(title), IntPtr.Zero, IntPtr.Zero);
-            GLFW.glfwMakeContextCurrent(win_ptr);
-            GL10.glViewport(0, 0, width, height);
-            return win_ptr;
+            GLFW.glfwWindowHint(GLFW.GLFW_DECORATED, options.IsBorderless ? GLFW.GLFW_FALSE : GLFW.GLFW_TRUE);
+            GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, options.IsNotResizable ? GLFW.GLFW_FALSE : GLFW.GLFW_TRUE);
         }
 
-        public static void Execute(SKSurface _surface)
+        public static void CreateProgram(SKSurface _surface)
         {
             GL30.glGenVertexArrays(1, VAO);
             GL30.glBindVertexArray(VAO[0]);
@@ -114,7 +113,19 @@ namespace SkiaCore
             GL20.glLinkProgram(shaderProgram);
             GL20.glUseProgram(shaderProgram);
 
+            GL20.glDeleteShader(vertexShader);
+            GL20.glDeleteShader(fragmentShader);
+
             GLFW.glfwSwapInterval(1);
         }
+
+        public static IntPtr CreateWindowContext(int width, int height, string title)
+        {
+            var win_ptr = GLFW.glfwCreateWindow(width, height, Encoding.ASCII.GetBytes(title), IntPtr.Zero, IntPtr.Zero);
+            GLFW.glfwMakeContextCurrent(win_ptr);
+            GL10.glViewport(0, 0, width, height);
+            return win_ptr;
+        }
+
     }
 }

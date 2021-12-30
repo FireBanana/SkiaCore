@@ -1,6 +1,6 @@
 ﻿using Arqan;
+using SkiaCore.Common;
 using SkiaCore.Components;
-using SkiaCore.SCGUI;
 using SkiaSharp;
 using System;
 using System.Collections.Concurrent;
@@ -16,7 +16,6 @@ namespace SkiaCore
 {
     public static class Core
     {
-        public delegate Component RenderFunction(SKSurface surface);
         private static SKSurface Surface { get; set; }
 
         static internal int Width = 800;
@@ -25,15 +24,7 @@ namespace SkiaCore
         internal static IntPtr Window;
         internal static int IdCounter = 0;
 
-        public struct SkiaCoreOptions
-        {
-            public bool IsBorderless;
-            public bool IsNotResizable;
-            public SKColor BackgroundColor;
-        } 
-
         static ConcurrentQueue<Action> _dispatcherQueue = new ConcurrentQueue<Action>();
-        static List<Layout> _layoutStack = new List<Layout>();
 
         public static void Initialize(int width, int height, string title, SkiaCoreOptions options = new SkiaCoreOptions())
         {
@@ -45,7 +36,7 @@ namespace SkiaCore
 
         }
 
-        static void Run(int width, int height, string title, SkiaCoreOptions options)
+        private static void Run(int width, int height, string title, SkiaCoreOptions options)
         {
             Width = width;
             Height = height;
@@ -58,23 +49,21 @@ namespace SkiaCore
                 var canvas = _surface.Canvas;
 
                 GLInitializer.InitializeWindow();
-
-                SetUpOptions(options);
+                GLInitializer.SetUpOptions(options);
 
                 Window = GLInitializer.CreateWindowContext(width, height, title);
 
                 #region CALLBACKS
 
+                //TODO Move
                 GLFW.glfwSetWindowCloseCallback(Window, (win) => { GLFW.glfwTerminate(); Environment.Exit(0); });
 
                 #endregion
 
-                GLInitializer.Execute(_surface);
+                GLInitializer.CreateProgram(_surface);
 
-                GraphicsRenderer.Initialize(_surface, options.BackgroundColor);
+                GraphicsRenderer.Initialize(_surface, width, height, options.BackgroundColor);
                 InputHandler.Initialize(Window);
-
-                _layoutStack.Add(new StackLayout());
 
                 while (GLFW.glfwWindowShouldClose(Window) == 0)
                 {
@@ -97,20 +86,12 @@ namespace SkiaCore
             }
 
         }
-
-        static void SetUpOptions(SkiaCoreOptions options)
-        {
-            GLFW.glfwWindowHint(GLFW.GLFW_DECORATED, options.IsBorderless ? GLFW.GLFW_FALSE : GLFW.GLFW_TRUE);
-            GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, options.IsNotResizable ? GLFW.GLFW_FALSE : GLFW.GLFW_TRUE);
-        }
         
-        public static void AddRenderComponent(RenderFunction func)
+        public static void AddRenderComponent(Component component)
         {
             _dispatcherQueue.Enqueue(new Action(() =>
             {
-                var component = func(Surface);
                 GraphicsRenderer.AddComponent(component);
-                _layoutStack.Last().AddChild(component);
 
                 if (component is InteractableComponent)
                     InputHandler.AddComponent(component as InteractableComponent);

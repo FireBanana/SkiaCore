@@ -26,7 +26,7 @@ namespace SkiaCore.Components
                 return false;
         }
 
-        public InteractableComponent(SKSurface surface, int width, int height, params object[] args) : base(surface, width, height, args)
+        public InteractableComponent(int width, int height, params object[] args) : base(width, height, args)
         {
             
         }

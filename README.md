@@ -1,9 +1,8 @@
 # SkiaCore - Cross-Platform SkiaSharp Renderer on .Net Core
 
-SkiaCore is a library that uses OpenGL(through the Arqan.x64 GLFW wrapper) to render SkiaSharp in a window. It is currently set-up for Windows only but can be easily expanded with
-the alternate Arqan wrappers. This is still in experimental stages and only provides a simple interface for creating UI
+SkiaCore is a library that uses OpenGL(through the Arqan.x64 GLFW wrapper) to render SkiaSharp in a window. It is currently set-up for Windows but will be expanded further in the future to support multiple platforms. Currently, the whole project is being shifted to Facebook's Yoga layout engine to provide a CSS style UI system.
 
-<b>Note: This library is currently in Beta</b>
+<b>Note: This library is currently in Alpha. </b>
 
 ## Getting Started
 
@@ -148,6 +147,7 @@ namespace SpriteEditor.Components
 ![2](2.PNG)
 
 ## Dependencies
-- Arqan (https://github.com/TheBoneJarmer/Arqan)
+- Arqan (https://github.com/TheBoneJarmer/Arqan) - Included via nuGet package.
+- Yoga (https://github.com/facebook/yoga) - pre-compiled (.NET 5.0) and available in the Libs directory.
 - SkiaSharp
 - Visual Studio 2019

@@ -10,6 +10,7 @@ namespace SkiaCore
     public static class InputHandler
     {
         public static double MouseX, MouseY;
+
         static List<InteractableComponent> _components = new List<InteractableComponent>();
         static IntPtr _window;
 
@@ -48,20 +49,20 @@ namespace SkiaCore
                 MouseX = x;
                 MouseY = y;
 
-                foreach(var component in _components)
+                for(int i = _components.Count - 1; i >= 0; i--)
                 {
-                    if(component.IsUnderCursor((int)x, (int)y))
+                    if (_components[i].IsUnderCursor((int)x, (int)y))
                     {
                         if (_currentMouseTargetedComponent == null)
                         {
-                            _currentMouseTargetedComponent = component;
-                            component.OnMouseEnter();                            
+                            _currentMouseTargetedComponent = _components[i];
+                            _components[i].OnMouseEnter();
                         }
-                        else if(_currentMouseTargetedComponent != component)
+                        else if (_currentMouseTargetedComponent != _components[i])
                         {
                             _currentMouseTargetedComponent.OnMouseExit();
-                            component.OnMouseEnter();
-                            _currentMouseTargetedComponent = component;                            
+                            _components[i].OnMouseEnter();
+                            _currentMouseTargetedComponent = _components[i];
                         }
 
                         return;

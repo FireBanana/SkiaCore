@@ -4,9 +4,27 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <WarningLevel>5</WarningLevel>
+  </PropertyGroup>
+
+<ItemGroup>
+  <ContentWithTargetPath Include="..\Libs\yoga.dll">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <TargetPath>yoga.dll</TargetPath>
+  </ContentWithTargetPath>
+  <Resource Include="..\Libs\yoga.dll" />
+</ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Arqan.Windows.x64" Version="1.0.5" />
     <PackageReference Include="SkiaSharp" Version="2.80.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Facebook.Yoga">
+      <HintPath>..\Libs\Facebook.Yoga.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

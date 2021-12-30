@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SkiaSharp;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -19,5 +20,12 @@ namespace SkiaCore.Common
         {
             return $"({X}, {Y})";
         }
+    }
+
+    public struct SkiaCoreOptions
+    {
+        public bool IsBorderless;
+        public bool IsNotResizable;
+        public SKColor BackgroundColor;
     }
 }
