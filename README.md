@@ -21,6 +21,11 @@ Core.AddRenderComponent(new TestComponent(50, 50, "#ff0000"));
 Core.AddRenderComponent(new TestComponent(50, 50, "#ff0f00"), item);
 ```
 
+The components will not show up correctly until you recalculate the tree via the Recalculate method.
+```
+Core.Recalculate();
+```
+
 ## Components
 
 Components are the building blocks of SkiaSharp. You can implement the abstract class 'Component' from SkiaCore.Components to start building your own. Here's an example of TestComponent
