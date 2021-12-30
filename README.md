@@ -1,6 +1,6 @@
 # SkiaCore - Cross-Platform SkiaSharp Renderer on .Net Core
 
-SkiaCore is a library that uses OpenGL(through the Arqan.x64 GLFW wrapper) to render SkiaSharp in a window. It is currently set-up for Windows but will be expanded further in the future to support multiple platforms. Currently, the whole project is being shifted to Facebook's Yoga layout engine to provide a CSS style UI system.
+SkiaCore is a library that uses OpenGL to render graphics powered by the Skia engine. It is currently set-up for Windows but will be expanded further in the future to support multiple platforms. The project uses Facebook's Yoga layout engine to enable styling in a convenient CSS style pattern.
 
 <b>Note: This library is currently in Alpha. </b>
 
@@ -11,42 +11,27 @@ It's quite easy to get started with SkiaCore. First reference the project into y
 ```
 using SkiaCore;
 
+//This is required and should be the first call before using the library
 Core.Initialize(800, 600, "Sprite Editor");
 ```
 
 Now you can add custom components in such a fashion:
 ```
-Core.AddRenderComponent((surface) => new Rectangle(surface, 0, 0, 800, 50));
-Core.AddRenderComponent((surface) => new Button(surface, 10, 10, 100, 25, "Open"));
-Core.AddRenderComponent((surface) => new SpriteView(surface, 0, 50, 800, 250));
+Core.AddRenderComponent(new TestComponent(50, 50, "#ff0000"));
+Core.AddRenderComponent(new TestComponent(50, 50, "#ff0f00"), item);
 ```
 
 ## Components
 
-Components are the building blocks of SkiaSharp. You can implement the abstract class 'Component' from SkiaCore.Components to start building your own. Here's an example of Rectangle
+Components are the building blocks of SkiaSharp. You can implement the abstract class 'Component' from SkiaCore.Components to start building your own. Here's an example of TestComponent
 from the example above:
 
 ```
-using SkiaCore.Components;
-using SkiaSharp;
-
-namespace Example
+class TestComponent : Component
 {
-    public class Rectangle : Component
+    public TestComponent(int width, int height, params object[] args) : base(width, height, args)
     {
-        public Rectangle(SKSurface surface, int x, int y, int width, int height, params object[] args) : base(surface, x, y, width, height, args)
-        {
-            Surface = surface;
-            X = x;
-            Y = y;
-            Width = width;
-            Height = height;
-        }
-
-        override public void Render()
-        {
-            Surface.Canvas.DrawRect(X, Y, Width, Height, new SKPaint() { Color = SKColors.Bisque }) ;
-        }
+        this.SetColor(SKColor.Parse((string)args[0]));
     }
 }
 ```
@@ -131,12 +116,6 @@ namespace SpriteEditor.Components
         {
             _color = _outColor;
         }
-
-        override public void Render()
-        {
-            Surface.Canvas.DrawRect(X, Y, Width, Height, new SKPaint { Color = _color });
-            Surface.Canvas.DrawText(_text, X + (Width / 2), Y + (Height / 1.75f), new SKPaint { Color = SKColors.Bisque, TextAlign = SKTextAlign.Center });
-        }
     }
 }
 
@@ -147,7 +126,7 @@ namespace SpriteEditor.Components
 ![2](2.PNG)
 
 ## Dependencies
-- Arqan (https://github.com/TheBoneJarmer/Arqan) - Included via nuGet package.
+- Arqan (https://github.com/TheBoneJarmer/Arqan) - Included via NuGet package.
 - Yoga (https://github.com/facebook/yoga) - pre-compiled (.NET 5.0) and available in the Libs directory.
-- SkiaSharp
+- SkiaSharp - Included via NuGet
 - Visual Studio 2019

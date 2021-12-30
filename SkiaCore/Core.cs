@@ -87,16 +87,23 @@ namespace SkiaCore
 
         }
         
-        public static void AddRenderComponent(Component component)
+        public static void AddRenderComponent(Component component, Component parent = null)
         {
             _dispatcherQueue.Enqueue(new Action(() =>
             {
-                GraphicsRenderer.AddComponent(component);
+                GraphicsRenderer.AddComponent(component, parent);
 
                 if (component is InteractableComponent)
                     InputHandler.AddComponent(component as InteractableComponent);
             }));
         }
 
+        public static void Recalculate()
+        {
+            _dispatcherQueue.Enqueue(new Action(() =>
+            {
+                GraphicsRenderer.RecalculateTree();
+            }));
+        }
     }
 }
