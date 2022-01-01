@@ -42,11 +42,6 @@ namespace SkiaCore.Components
             Id = ++Core.IdCounter;
         }
 
-        public void SetContent()
-        {
-            _node.JustifyContent = YogaJustify.FlexEnd;
-        }
-
         internal void Attach(Component child)
         {
             _node.AddChild(child._node);

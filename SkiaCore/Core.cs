@@ -80,8 +80,8 @@ namespace SkiaCore
 
                     GL11.glDrawElements(GL11.GL_TRIANGLES, 6, GL11.GL_UNSIGNED_INT, IntPtr.Zero);
                     GLFW.glfwSwapBuffers(Window);
-                    GLFW.glfwPollEvents();   //TODO: Add SkiaCore.Settings
-                    //GLFW.glfwWaitEvents(); //Pauses execution until event received
+                    //GLFW.glfwPollEvents();   //TODO: Add SkiaCore.Settings
+                    GLFW.glfwWaitEvents(); //Pauses execution until event received
                 }
 
             }
