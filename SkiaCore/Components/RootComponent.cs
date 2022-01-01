@@ -9,6 +9,7 @@ namespace SkiaCore.Components
     {
         public RootComponent(int width, int height, params object[] args) : base(width, height, args)
         {
+
         }
     }
 }

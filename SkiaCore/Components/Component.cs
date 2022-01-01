@@ -8,12 +8,14 @@ namespace SkiaCore.Components
     public abstract class Component
     {
         public int Id;
-        public int X { get; set; }
-        public int Y { get; set; }
+        public int X { get; internal set; }
+        public int Y { get; internal set; }
         internal bool WasMouseIn { get; set; }
 
         private YogaNode _node { get; set; }
         private SKPaint _paint { get; set; }
+
+        internal YogaNode GetNode() => _node;
 
         public int Width
         {
@@ -36,29 +38,28 @@ namespace SkiaCore.Components
             _node.Height = height;
 
             _paint = new SKPaint();
-
+            
             Id = ++Core.IdCounter;
         }
 
-        public void Attach(Component child)
+        public void SetContent()
+        {
+            _node.JustifyContent = YogaJustify.FlexEnd;
+        }
+
+        internal void Attach(Component child)
         {
             _node.AddChild(child._node);
         }
 
-        public void SetStateDebug()
-        {
-            _node.FlexDirection = YogaFlexDirection.Row;
-            _node.JustifyContent = YogaJustify.FlexEnd;
-        }
-
-        public void Render(SKSurface surface)
+        internal void Render(SKSurface surface)
         {
             surface.Canvas.DrawRect(
                 new SKRect(
-                    _node.LayoutX,
-                    _node.LayoutY,
-                    _node.LayoutX + _node.Width.Value,
-                    _node.LayoutY + _node.Height.Value
+                    X,
+                    Y,
+                    X + _node.Width.Value,
+                    Y + _node.Height.Value
                     ),
                 _paint
                 );
@@ -68,5 +69,7 @@ namespace SkiaCore.Components
         {
             _node.CalculateLayout();
         }
+
+
     }
 }

@@ -1,4 +1,6 @@
-﻿using SkiaSharp;
+﻿using Facebook.Yoga;
+using SkiaCore.Components;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -27,5 +29,11 @@ namespace SkiaCore.Common
         public bool IsBorderless;
         public bool IsNotResizable;
         public SKColor BackgroundColor;
+    }
+
+    internal struct ComponentNodePair
+    {
+        public Component Component;
+        public YogaNode Node;
     }
 }

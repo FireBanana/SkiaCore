@@ -1,8 +1,11 @@
 ﻿using Arqan;
 using SkiaCore.Components;
+using SkiaCore.Common;
 using SkiaSharp;
 using System.Collections.Generic;
 using Facebook.Yoga;
+using System.Linq;
+using System;
 
 namespace SkiaCore
 {
@@ -10,7 +13,7 @@ namespace SkiaCore
     {
         internal static SKSurface Surface;
 
-        private static List<Component> _components = new List<Component>();
+        private static List<ComponentNodePair> _componentNodeList = new List<ComponentNodePair>();
         private static SKColor _backgroundColor;
         private static RootComponent _root;
 
@@ -23,33 +26,60 @@ namespace SkiaCore
 
             _root = new RootComponent(width, height);
 
-            _components.Add(_root);
+            AddComponent(_root);
         }
 
         internal static void Update()
         {
             Surface.Canvas.Clear(_backgroundColor);
 
-            foreach (var component in _components)
-                component.Render(Surface);
+            foreach (var cnPair in _componentNodeList)
+                cnPair.Component.Render(Surface);
 
-            GL10.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, Core.Width, Core.Height, 0, GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE, Surface.PeekPixels().GetPixels());
+            GL10.glTexImage2D(
+                GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB,
+                Core.Width, Core.Height, 0, GL12.GL_BGRA,
+                GL11.GL_UNSIGNED_BYTE, Surface.PeekPixels().GetPixels()
+                );
 
         }
 
-        internal static void AddComponent(Component component, Component parent)
+        internal static void AddComponent(Component component, Component parent = null)
         {
-            if (parent == null)
-                _root.Attach(component);
-            else
-                parent.Attach(component);
+            if (!component.Equals(_root))
+            {
+                if (parent == null)
+                    _root.Attach(component);
+                else
+                    parent.Attach(component);
+            }
 
-            _components.Add(component);
+            _componentNodeList.Add(new ComponentNodePair() { Component = component, Node = component.GetNode() });
         }
 
-        internal static void RecalculateTree()
+        internal static void UpdateLayout()
         {
             _root.CalculateLayout();
+
+            RecalculateTree();
+        }
+
+        private static void RecalculateTree(YogaNode node = null, float x = 0, float y = 0)
+        {
+            node = node == null ? _root.GetNode() : node;
+
+            ComponentNodePair currentCNPair = _componentNodeList.First(x => x.Node.Equals(node));
+
+            x += currentCNPair.Node.LayoutX;
+            y += currentCNPair.Node.LayoutY;
+
+            currentCNPair.Component.X = (int)x;
+            currentCNPair.Component.Y = (int)y;
+
+            for (int i = 0; i < node.Count; ++i)
+            {
+                RecalculateTree(node[i], x, y);
+            }
         }
     }
 }
