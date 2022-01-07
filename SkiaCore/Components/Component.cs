@@ -2,14 +2,16 @@
 using System.Diagnostics;
 using Facebook.Yoga;
 using System;
+using SkiaCore.Common;
 
 namespace SkiaCore.Components
 {
     public abstract class Component
     {
-        public int Id;
-        public int X { get; internal set; }
-        public int Y { get; internal set; }
+        public int Id { get; internal set; }
+        public int X  { get; internal set; }
+        public int Y  { get; internal set; }
+
         internal bool WasMouseIn { get; set; }
 
         private YogaNode _node { get; set; }
@@ -28,8 +30,6 @@ namespace SkiaCore.Components
             set { _node.Height = value; }
         }
 
-        public void SetColor(SKColor color) => _paint.Color = color;
-
         public Component(int width, int height, params object[] args)
         {
             _node = new YogaNode();
@@ -41,6 +41,34 @@ namespace SkiaCore.Components
             
             Id = ++Core.IdCounter;
         }
+
+        //================================= SET NODE SPECIFICS ======================================
+
+        public void SetColor(Color color) 
+            => _paint.Color = SKColor.Parse(color.HexValue);
+
+        public void SetFlexDirection(FlexDirection dir) 
+            => _node.FlexDirection = (YogaFlexDirection)dir;
+
+        public void SetLayoutDirection(LayoutDirection lDir) 
+            => _node.StyleDirection = (YogaDirection)lDir;
+
+        public void SetJustifyContent(Justify just) 
+            => _node.JustifyContent = (YogaJustify)just;
+
+        public void SetWrapMode(WrapMode wMode)
+            => _node.Wrap = (YogaWrap)wMode;
+
+        public void SetAlignItems(Alignment align)
+            => _node.AlignItems = (YogaAlign)align;
+
+        public void SetAlignSelf(Alignment align)
+            => _node.AlignSelf = (YogaAlign)align;
+
+        public void SetAlignContent(Alignment align)
+            => _node.AlignContent = (YogaAlign)align;
+
+        //===========================================================================================
 
         internal void Attach(Component child)
         {

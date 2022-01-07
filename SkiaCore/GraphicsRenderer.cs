@@ -6,39 +6,44 @@ using System.Collections.Generic;
 using Facebook.Yoga;
 using System.Linq;
 using System;
+using SkiaCore.GL;
 
 namespace SkiaCore
 {
     internal static class GraphicsRenderer
     {
-        internal static SKSurface Surface;
+        internal static SKSurface Surface { get; private set; }
+        internal static Component Root { get; private set; }
 
+        internal static int Width { get; private set; } = 800;
+        internal static int Height { get; private set; } = 600;
+
+        private static SKImageInfo _imageInfo;
         private static List<ComponentNodePair> _componentNodeList = new List<ComponentNodePair>();
-        private static SKColor _backgroundColor;
-        private static RootComponent _root;
 
-        public static RootComponent GetRoot() => _root;
-
-        internal static void Initialize(SKSurface surface, int width, int height, SKColor color = default(SKColor))
+        internal static void Initialize
+            (int width, int height)
         {
-            Surface = surface;
-            _backgroundColor = color;
+            _imageInfo = new SKImageInfo(width, height);
 
-            _root = new RootComponent(width, height);
+            Surface = SKSurface.Create(_imageInfo);
 
-            AddComponent(_root);
+            Width = width;
+            Height = height;
+
+            Events.SetFramebufferResizeCallback((w, h) => { Resize(w, h); });
         }
 
         internal static void Update()
         {
-            Surface.Canvas.Clear(_backgroundColor);
+            Surface.Canvas.Clear(SKColor.Empty);
 
             foreach (var cnPair in _componentNodeList)
                 cnPair.Component.Render(Surface);
 
             GL10.glTexImage2D(
                 GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB,
-                Core.Width, Core.Height, 0, GL12.GL_BGRA,
+                Width, Height, 0, GL12.GL_BGRA,
                 GL11.GL_UNSIGNED_BYTE, Surface.PeekPixels().GetPixels()
                 );
 
@@ -46,10 +51,19 @@ namespace SkiaCore
 
         internal static void AddComponent(Component component, Component parent = null)
         {
-            if (!component.Equals(_root))
+            if (Root == null)
+            {
+                Root = component;
+
+                //Overrides the roots width and height to fit the window
+                Root.Width = Width;
+                Root.Height = Height;
+            }
+
+            if (!component.Equals(Root))
             {
                 if (parent == null)
-                    _root.Attach(component);
+                    Root.Attach(component);
                 else
                     parent.Attach(component);
             }
@@ -57,16 +71,33 @@ namespace SkiaCore
             _componentNodeList.Add(new ComponentNodePair() { Component = component, Node = component.GetNode() });
         }
 
+        internal static void Resize(int width, int height)
+        {
+            _imageInfo.Width = width;
+            _imageInfo.Height = height;            
+
+            Width = width;
+            Height = height;
+
+            Root.Width = width;
+            Root.Height = height;
+
+            Surface.Dispose();
+            Surface = SKSurface.Create(_imageInfo);
+
+            UpdateLayout();
+        }
+
         internal static void UpdateLayout()
         {
-            _root.CalculateLayout();
+            Root.CalculateLayout();
 
             RecalculateTree();
         }
 
         private static void RecalculateTree(YogaNode node = null, float x = 0, float y = 0)
         {
-            node = node == null ? _root.GetNode() : node;
+            node = node == null ? Root.GetNode() : node;
 
             ComponentNodePair currentCNPair = _componentNodeList.First(x => x.Node.Equals(node));
 
