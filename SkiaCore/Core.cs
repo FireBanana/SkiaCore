@@ -5,7 +5,10 @@ using SkiaCore.GL;
 using SkiaSharp;
 using System;
 using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 using System.Threading;
+
+[assembly: InternalsVisibleTo("SkiaCoreTests")]
 
 namespace SkiaCore
 {
@@ -14,7 +17,7 @@ namespace SkiaCore
         internal static IntPtr Window;
         internal static int IdCounter = 0;
 
-        static ConcurrentQueue<Action> _dispatcherQueue = new ConcurrentQueue<Action>();
+        private static readonly ConcurrentQueue<Action> _dispatcherQueue = new ConcurrentQueue<Action>();
 
         public static void Initialize
             (int width, int height, string title, SkiaCoreOptions options = new SkiaCoreOptions())

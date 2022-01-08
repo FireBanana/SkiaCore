@@ -19,7 +19,7 @@ namespace SkiaCore
         internal static int Height { get; private set; } = 600;
 
         private static SKImageInfo _imageInfo;
-        private static List<ComponentNodePair> _componentNodeList = new List<ComponentNodePair>();
+        private static readonly List<ComponentNodePair> _componentNodeList = new List<ComponentNodePair>();
 
         internal static void Initialize
             (int width, int height)

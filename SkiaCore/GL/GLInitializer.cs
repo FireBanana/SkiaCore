@@ -10,7 +10,7 @@ namespace SkiaCore.GL
 {
     internal static class GLInitializer
     {
-        static float[] vertices =
+        static readonly float[] vertices =
         {
           1f,  1f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
           1f, -1f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
