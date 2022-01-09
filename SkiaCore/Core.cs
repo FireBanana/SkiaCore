@@ -51,9 +51,7 @@ namespace SkiaCore
             {
                 if (_dispatcherQueue.Count > 0)
                 {
-                    Action res;
-
-                    if (_dispatcherQueue.TryDequeue(out res))
+                    if (_dispatcherQueue.TryDequeue(out Action res))
                         res.Invoke();
                 }
 

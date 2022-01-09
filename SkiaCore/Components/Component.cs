@@ -16,6 +16,7 @@ namespace SkiaCore.Components
 
         private YogaNode _node { get; set; }
         private SKPaint _paint { get; set; }
+        private SKSize _bordersize { get; set; }
 
         internal YogaNode GetNode() => _node;
 
@@ -47,6 +48,12 @@ namespace SkiaCore.Components
         public void SetColor(Color color) 
             => _paint.Color = SKColor.Parse(color.HexValue);
 
+        public void SetAntiAlias(bool isAA)
+            => _paint.IsAntialias = isAA;
+
+        public void SetBorderSize(int size)
+            => _bordersize = new SKSize(size, size);
+
         public void SetFlexDirection(FlexDirection dir) 
             => _node.FlexDirection = (YogaFlexDirection)dir;
 
@@ -77,13 +84,14 @@ namespace SkiaCore.Components
 
         internal void Render(SKSurface surface)
         {
-            surface.Canvas.DrawRect(
+            surface.Canvas.DrawRoundRect(
                 new SKRect(
                     X,
                     Y,
                     X + _node.Width.Value,
                     Y + _node.Height.Value
                     ),
+                _bordersize,
                 _paint
                 );
         }

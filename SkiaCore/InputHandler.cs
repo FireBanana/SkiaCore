@@ -17,6 +17,7 @@ namespace SkiaCore
         static InteractableComponent _currentMouseTargetedComponent = null;
         static InteractableComponent _currentSelectedComponent = null;
 
+        //TODO events Switched to event class, call from there
         internal static void Initialize(IntPtr window)
         {
             _window = window;
@@ -76,6 +77,7 @@ namespace SkiaCore
                 }
             });
 
+            
             GLFW.glfwSetKeyCallback(window, (wind, key, scancode, action, mods) =>
             {
                 
@@ -93,6 +95,7 @@ namespace SkiaCore
             });
         }
 
+        //Add interface
         internal static void Update()
         {
 

@@ -16,7 +16,11 @@ namespace SkiaCoreTests
             Assert.Equal(Core.Window, IntPtr.Zero);
 
             Core.Initialize(500, 500, "SkiaTest");
-            Core.ExecuteOnUIThread(() => Assert.NotEqual(Core.Window, IntPtr.Zero));            
+            Core.ExecuteOnUIThread(() =>
+            {
+                Assert.NotEqual(Core.Window, IntPtr.Zero);
+                Assert.NotEqual(Arqan.GL10.glGetError(), (uint)0);
+            });     
         }
 
         [Fact]
