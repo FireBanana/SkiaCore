@@ -1,5 +1,7 @@
 # SkiaCore - Cross-Platform SkiaSharp Renderer on .Net Core
 
+![.NET 5.x](https://github.com/github/docs/actions/workflows/dotnet.yml/badge.svg)
+
 SkiaCore is a library that uses OpenGL to render graphics powered by the Skia engine. It is currently set-up for Windows but will be expanded further in the future to support multiple platforms. The project uses Facebook's Yoga layout engine to enable styling in a convenient CSS style pattern.
 
 <b>Note: This library is currently in Alpha. </b>
