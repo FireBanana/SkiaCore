@@ -8,7 +8,7 @@ using SkiaCore;
 
 namespace SkiaCore.GL
 {
-    internal static class GLInitializer
+    internal static class GLInterface
     {
         static readonly float[] vertices =
         {
@@ -118,6 +118,17 @@ namespace SkiaCore.GL
             GL20.glDeleteShader(fragmentShader);
 
             GLFW.glfwSwapInterval(1);
+        }
+
+        internal static void Draw(IntPtr win)
+        {
+            GL11.glDrawElements(GL11.GL_TRIANGLES, 6, GL11.GL_UNSIGNED_INT, IntPtr.Zero);
+            GLFW.glfwSwapBuffers(win);
+        }
+
+        internal static void Poll()
+        {
+            GLFW.glfwWaitEvents();
         }
 
         internal static IntPtr CreateWindowContext(int width, int height, string title)

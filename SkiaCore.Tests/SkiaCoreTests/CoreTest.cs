@@ -1,38 +1,40 @@
 using System;
 using Xunit;
 using SkiaCore;
+using SkiaCore.Common;
+using System.Threading;
+using System.Reflection;
 
 namespace SkiaCoreTests
 {
-    /// <summary>
-    /// Tests for the Core module. Assertion may need to be
-    /// performed on the UI thread.
-    /// </summary>
     public class CoreTest
     {
+        private void CallInit()
+        {
+            Assert.Equal(IntPtr.Zero, Core.Window);
+
+            var mInfo = typeof(Core)
+                .GetMethod("SetUpInterfaces", BindingFlags.Static | BindingFlags.NonPublic);
+
+            mInfo.Invoke(null, new object[] { 50, 50, "Test", new SkiaCoreOptions() });
+        }
+
         [Fact]
         public void CheckIfWindowInitialized()
         {
-            Assert.Equal(Core.Window, IntPtr.Zero);
+            CallInit();
 
-            Core.Initialize(500, 500, "SkiaTest");
-            Core.ExecuteOnUIThread(() =>
-            {
-                Assert.NotEqual(Core.Window, IntPtr.Zero);
-                Assert.NotEqual(Arqan.GL10.glGetError(), (uint)0);
-            });     
+            Assert.Equal((uint)0, Arqan.GL10.glGetError());
+            Assert.NotEqual(IntPtr.Zero, Core.Window);
         }
 
         [Fact]
         public void CheckIfGraphicsInitialized()
         {
-            Core.Initialize(500, 500, "SkiaTest");
-            Core.ExecuteOnUIThread(
-                () => 
-                {
-                    Assert.NotNull(GraphicsRenderer.Surface);
-                }
-            );
+            CallInit();
+
+            Assert.NotNull(GraphicsRenderer.Surface);
+
         }
     }
 }

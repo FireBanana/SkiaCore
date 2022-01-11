@@ -3,19 +3,25 @@ using System.Diagnostics;
 using Facebook.Yoga;
 using System;
 using SkiaCore.Common;
+using System.Text;
+using SkiaCore.Interfaces;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace SkiaCore.Components
 {
     public abstract class Component
     {
-        public int Id { get; internal set; }
+        private readonly YogaNode _node;
+        private readonly SKPaint _paint;
+
+        private readonly List<IEffect> _effects;
+
         public int X  { get; internal set; }
         public int Y  { get; internal set; }
 
         internal bool WasMouseIn { get; set; }
 
-        private YogaNode _node { get; set; }
-        private SKPaint _paint { get; set; }
         private SKSize _bordersize { get; set; }
 
         internal YogaNode GetNode() => _node;
@@ -39,8 +45,12 @@ namespace SkiaCore.Components
             _node.Height = height;
 
             _paint = new SKPaint();
-            
-            Id = ++Core.IdCounter;
+            _effects = new List<IEffect>();
+        }
+
+        public void InsertEffect(IEffect effect)
+        {
+            _effects.Add(effect);
         }
 
         //================================= SET NODE SPECIFICS ======================================
@@ -94,13 +104,14 @@ namespace SkiaCore.Components
                 _bordersize,
                 _paint
                 );
+
+            foreach (var e in _effects)
+                e.Draw(this, surface.Canvas);
         }
 
         internal void CalculateLayout()
         {
             _node.CalculateLayout();
         }
-
-
     }
 }
