@@ -10,19 +10,18 @@ using SkiaCore.GL;
 
 namespace SkiaCore
 {
-    internal static class GraphicsRenderer
+    internal class GraphicsRenderer
     {
-        internal static SKSurface Surface { get; private set; }
-        internal static Component Root { get; private set; }
+        internal SKSurface Surface { get; private set; }
+        internal Component Root { get; private set; }
 
-        internal static int Width { get; private set; } = 800;
-        internal static int Height { get; private set; } = 600;
+        internal int Width { get; private set; } = 800;
+        internal int Height { get; private set; } = 600;
 
-        private static SKImageInfo _imageInfo;
-        private static readonly List<ComponentNodePair> _componentNodeList = new List<ComponentNodePair>();
+        private SKImageInfo _imageInfo;
+        private readonly List<ComponentNodePair> _componentNodeList = new List<ComponentNodePair>();
 
-        internal static void Initialize
-            (int width, int height)
+        public GraphicsRenderer(int width, int height)
         {
             _imageInfo = new SKImageInfo(width, height);
 
@@ -34,22 +33,17 @@ namespace SkiaCore
             Events.SetFramebufferResizeCallback((w, h) => { Resize(w, h); });
         }
 
-        internal static void Update()
+        internal void Update()
         {
             Surface.Canvas.Clear(SKColor.Empty);
 
             foreach (var cnPair in _componentNodeList)
                 cnPair.Component.Render(Surface);
 
-            GL10.glTexImage2D(
-                GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB,
-                Width, Height, 0, GL12.GL_BGRA,
-                GL11.GL_UNSIGNED_BYTE, Surface.PeekPixels().GetPixels()
-                );
-
+            GLInterface.RenderSurface(Surface.PeekPixels().GetPixels(), Width, Height);
         }
 
-        internal static void AddComponent(Component component, Component parent = null)
+        internal void AddComponent(Component component, Component parent = null)
         {
             if (Root == null)
             {
@@ -71,7 +65,7 @@ namespace SkiaCore
             _componentNodeList.Add(new ComponentNodePair() { Component = component, Node = component.GetNode() });
         }
 
-        internal static void Resize(int width, int height)
+        internal void Resize(int width, int height)
         {
             _imageInfo.Width = width;
             _imageInfo.Height = height;            
@@ -88,14 +82,14 @@ namespace SkiaCore
             UpdateLayout();
         }
 
-        internal static void UpdateLayout()
+        internal void UpdateLayout()
         {
             Root.CalculateLayout();
 
             RecalculateTree();
         }
 
-        private static void RecalculateTree(YogaNode node = null, float x = 0, float y = 0)
+        private void RecalculateTree(YogaNode node = null, float x = 0, float y = 0)
         {
             node = node == null ? Root.GetNode() : node;
 

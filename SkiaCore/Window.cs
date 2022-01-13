@@ -1,5 +1,6 @@
 ﻿using Arqan;
 using SkiaCore.Common;
+using SkiaCore.Components;
 using SkiaCore.GL;
 using System;
 using System.Collections.Generic;
@@ -7,9 +8,10 @@ using System.Text;
 
 namespace SkiaCore
 {
-    internal class Window
+    public class Window
     {
-        internal readonly IntPtr WindowPointer;
+        internal IntPtr WindowPointer { get; private set; }
+
         internal readonly int Width;
         internal readonly int Height;
         internal readonly string Title;
@@ -30,60 +32,61 @@ namespace SkiaCore
 
             _options = options;
 
-            _renderer = new GraphicsRenderer();
+            _renderer = new GraphicsRenderer(width, height);
             _queue = new UIQueue();
-        }
-
-        private static void SetUpInterfaces(int width, int height, string title, SkiaCoreOptions options)
-        {
-            GraphicsRenderer.Initialize(width, height);
-            GLInterface.InitializeWindow();
-
-            Window = GLInterface.CreateWindowContext(width, height, title);
-
-            Events.Initialize(Window);
-            InputHandler.Initialize(Window);
-
-            GLInterface.SetUpOptions(options);
-            GLInterface.CreateProgram(GraphicsRenderer.Surface);
-        }
-
-        internal void Update()
-        {
-            while (GLFW.glfwWindowShouldClose(WindowPointer) == 0)
-            {
-                UIQueue.CallDispatch();
-
-                GraphicsRenderer.Update();
-                InputHandler.Update();
-
-                GLInterface.Draw(WindowPointer);
-                GLInterface.Poll();
-            }
         }
 
         public void AddRenderComponent(Component component, Component parent = null)
         {
-            UIQueue.AddToQueue(() =>
+            _queue.AddToQueue(() =>
             {
-                GraphicsRenderer.AddComponent(component, parent);
+                _renderer.AddComponent(component, parent);
 
                 if (component is InteractableComponent)
                     InputHandler.AddComponent(component as InteractableComponent);
             });
         }
 
-        public static void Recalculate()
+        public void Recalculate()
         {
-            UIQueue.AddToQueue(() =>
+            _queue.AddToQueue(() =>
             {
-                GraphicsRenderer.UpdateLayout();
+                _renderer.UpdateLayout();
             });
         }
 
-        internal static void ExecuteOnUIThread(Action action)
+        internal void SetUpInterfaces()
         {
-            UIQueue.AddToQueue(action);
+            GLInterface.InitializeWindow();
+
+            WindowPointer = GLInterface.CreateWindowContext(Width, Height, Title);
+
+            //Events.Initialize(WindowPointer);
+            //InputHandler.Initialize(WindowPointer);
+
+            GLInterface.SetUpOptions(_options);
+            GLInterface.CreateProgram(_renderer.Surface.PeekPixels().GetPixels(), Width, Height);
+        }
+
+        internal void Update()
+        {
+            while (GLFW.glfwWindowShouldClose(WindowPointer) == 0)
+            {
+                GLInterface.ActivateContext(WindowPointer);
+
+                _queue.CallDispatch();
+
+                _renderer.Update();
+                //InputHandler.Update();
+
+                GLInterface.Draw(WindowPointer);
+                GLInterface.Poll();
+            }
+        }
+
+        internal void ExecuteOnUIThread(Action action)
+        {
+            _queue.AddToQueue(action);
         }
     }
 }

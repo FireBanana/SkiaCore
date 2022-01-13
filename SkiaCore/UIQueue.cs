@@ -5,11 +5,11 @@ using System.Text;
 
 namespace SkiaCore
 {
-    internal static class UIQueue
+    internal class UIQueue
     {
-        private static readonly Queue<Action> _dispatcherQueue = new Queue<Action>();
+        private readonly Queue<Action> _dispatcherQueue = new Queue<Action>();
 
-        internal static void CallDispatch()
+        internal void CallDispatch()
         {
             while (_dispatcherQueue.Count > 0)
             {
@@ -18,7 +18,7 @@ namespace SkiaCore
             }
         }
 
-        internal static void AddToQueue(Action a)
+        internal void AddToQueue(Action a)
         {
             _dispatcherQueue.Enqueue(a);
         }
