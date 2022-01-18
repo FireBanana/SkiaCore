@@ -20,31 +20,42 @@ namespace SkiaCore
         private static readonly ConcurrentQueue<Window> _windowQueue 
             = new ConcurrentQueue<Window>();
 
+        public static void Initialize()
+        {
+            var thread = new Thread(() => 
+            {
+                GLFW.glfwInit(); // TODO Move to interface
+                Update();
+            });
+
+            thread.Start();
+        }
+
         public static Window CreateWindow
             (int width, int height, string title,
             SkiaCoreOptions options = new SkiaCoreOptions())
         {
             var win = new Window(width, height, title, options);
             
-            _windowQueue.Enqueue(win);
-
-            var thread = new Thread(() => Update());
-            thread.Start();
+            _windowQueue.Enqueue(win);            
 
             return win;
         }
 
         private static void Update()
         {
-            if (_windowQueue.TryDequeue(out var window))
+            while (true)
             {
-                window.SetUpInterfaces();
-                _windowList.Add(window);
-            }
+                if (_windowQueue.TryDequeue(out var window))
+                {
+                    window.SetUpInterfaces();
+                    _windowList.Add(window);
+                }
 
-            foreach(var win in _windowList)
-            {
-                win.Update();
+                foreach (var win in _windowList)
+                {
+                    win.Update();
+                }
             }
         }
     }

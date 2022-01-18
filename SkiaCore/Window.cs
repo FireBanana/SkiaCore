@@ -19,6 +19,7 @@ namespace SkiaCore
         private readonly SkiaCoreOptions _options;
         private readonly GraphicsRenderer _renderer;
         private readonly UIQueue _queue;
+
         //private readonly InputHandler _inputHandler;
         //private readonly EventSystem _eventSystem;
 
@@ -55,6 +56,19 @@ namespace SkiaCore
             });
         }
 
+        public void ExecuteOnUIThread(Action action)
+        {
+            _queue.AddToQueue(action);
+        }
+
+        public bool GetWindowError()
+        {
+            if (GLInterface.GetError() == 0 && _renderer.Surface != null)
+                return false;
+
+            return true;
+        }
+
         internal void SetUpInterfaces()
         {
             GLInterface.InitializeWindow();
@@ -70,7 +84,7 @@ namespace SkiaCore
 
         internal void Update()
         {
-            while (GLFW.glfwWindowShouldClose(WindowPointer) == 0)
+            if (GLFW.glfwWindowShouldClose(WindowPointer) == 0)
             {
                 GLInterface.ActivateContext(WindowPointer);
 
@@ -83,10 +97,7 @@ namespace SkiaCore
                 GLInterface.Poll();
             }
         }
-
-        internal void ExecuteOnUIThread(Action action)
-        {
-            _queue.AddToQueue(action);
-        }
+    
+        // TODO set close callback to remove from list
     }
 }

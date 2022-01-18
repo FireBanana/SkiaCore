@@ -31,7 +31,6 @@ namespace SkiaCore.GL
 
         internal static void InitializeWindow()
         {
-            GLFW.glfwInit();
             GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
             GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
             GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
@@ -146,11 +145,18 @@ namespace SkiaCore.GL
 
         internal static IntPtr CreateWindowContext(int width, int height, string title)
         {
-            var win_ptr = GLFW.glfwCreateWindow(width, height, Encoding.ASCII.GetBytes(title), IntPtr.Zero, IntPtr.Zero);
+            var win_ptr = GLFW.glfwCreateWindow(
+                width, height, Encoding.ASCII.GetBytes(title), IntPtr.Zero, IntPtr.Zero);
+            
             GLFW.glfwMakeContextCurrent(win_ptr);
             GL10.glViewport(0, 0, width, height);
+            
             return win_ptr;
         }
 
+        internal static uint GetError()
+        {
+            return GL10.glGetError();
+        }
     }
 }

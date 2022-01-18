@@ -18,50 +18,40 @@ namespace SkiaCoreTests
 
     public class ComponentTest
     {
-        private void CallInit()
-        {
-            Assert.Equal(IntPtr.Zero, Core.Window);
-
-            var mInfo = typeof(Core)
-                .GetMethod("SetUpInterfaces", BindingFlags.Static | BindingFlags.NonPublic);
-
-            mInfo.Invoke(null, new object[] { 800, 600, "Test", new SkiaCoreOptions() });
-        }
-
         [Fact]
         public void CheckIfTreeGenerates_Default()
         {
-            CallInit();
+            var win = Core.CreateWindow(800, 600, "test");
 
             var c1 = new TestComponent(10, 10);
             var c2 = new TestComponent(10, 10);
             var c3 = new TestComponent(10, 10);
             var c4 = new TestComponent(5, 5);
 
-            GraphicsRenderer.AddComponent(c1);
-            GraphicsRenderer.AddComponent(c2);
-            GraphicsRenderer.AddComponent(c3, c2);
-            GraphicsRenderer.AddComponent(c4, c3);
+            win.AddRenderComponent(c1);
+            win.AddRenderComponent(c2);
+            win.AddRenderComponent(c3, c2);
+            win.AddRenderComponent(c4, c3);
 
-            GraphicsRenderer.UpdateLayout();
+            win.Recalculate();
 
-            Assert.Equal(0, c1.X);
-            Assert.Equal(0, c1.Y);
+            win.ExecuteOnUIThread(() => Assert.Equal(0, c1.X));
+            win.ExecuteOnUIThread(() => Assert.Equal(0, c1.Y));
 
-            Assert.Equal(0, c2.X);
-            Assert.Equal(0, c2.Y);
+            win.ExecuteOnUIThread(() => Assert.Equal(0, c2.X));
+            win.ExecuteOnUIThread(() => Assert.Equal(0, c2.Y));
 
-            Assert.Equal(0, c3.X);
-            Assert.Equal(0, c3.Y);
+            win.ExecuteOnUIThread(() => Assert.Equal(0, c3.X));
+            win.ExecuteOnUIThread(() => Assert.Equal(0, c3.Y));
 
-            Assert.Equal(0, c4.X);
-            Assert.Equal(0, c4.Y);
+            win.ExecuteOnUIThread(() => Assert.Equal(0, c4.X));
+            win.ExecuteOnUIThread(() => Assert.Equal(0, c4.Y));
         }
 
         [Fact]
         public void CheckIfTreeGenerates_Right()
         {
-            CallInit();
+            var win = Core.CreateWindow(800, 600, "test");
 
             var c1 = new TestComponent(10, 10);
             var c2 = new TestComponent(10, 10);
@@ -72,24 +62,24 @@ namespace SkiaCoreTests
             c1.SetFlexDirection(SkiaCore.Common.FlexDirection.Column);
             c1.SetAlignItems(SkiaCore.Common.Alignment.FlexEnd);
 
-            GraphicsRenderer.AddComponent(c1);
-            GraphicsRenderer.AddComponent(c2);
-            GraphicsRenderer.AddComponent(c3, c2);
-            GraphicsRenderer.AddComponent(c4, c3);
+            win.AddRenderComponent(c1);
+            win.AddRenderComponent(c2);
+            win.AddRenderComponent(c3, c2);
+            win.AddRenderComponent(c4, c3);
 
-            GraphicsRenderer.UpdateLayout();
+            win.Recalculate();
 
-            Assert.Equal(0, c1.X);
-            Assert.Equal(0, c1.Y);
+            win.ExecuteOnUIThread(() => Assert.Equal(0, c1.X));
+            win.ExecuteOnUIThread(() => Assert.Equal(0, c1.Y));
 
-            Assert.Equal(790, c2.X);
-            Assert.Equal(590, c2.Y);
+            win.ExecuteOnUIThread(() => Assert.Equal(790, c2.X));
+            win.ExecuteOnUIThread(() => Assert.Equal(590, c2.Y));
 
-            Assert.Equal(790, c3.X);
-            Assert.Equal(590, c3.Y);
+            win.ExecuteOnUIThread(() => Assert.Equal(790, c3.X));
+            win.ExecuteOnUIThread(() => Assert.Equal(590, c3.Y));
 
-            Assert.Equal(790, c4.X);
-            Assert.Equal(590, c4.Y);
+            win.ExecuteOnUIThread(() => Assert.Equal(790, c4.X));
+            win.ExecuteOnUIThread(() => Assert.Equal(590, c4.Y));
 
         }
     }
