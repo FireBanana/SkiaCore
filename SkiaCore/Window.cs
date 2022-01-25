@@ -17,11 +17,12 @@ namespace SkiaCore
         internal readonly string Title;
 
         private readonly SkiaCoreOptions _options;
-        private readonly GraphicsRenderer _renderer;
         private readonly UIQueue _queue;
 
+        private GraphicsRenderer _renderer;
+
+        private Events _eventSystem;
         //private readonly InputHandler _inputHandler;
-        //private readonly EventSystem _eventSystem;
 
         internal Window(int width, int height, string title,
             SkiaCoreOptions options = new SkiaCoreOptions())
@@ -33,7 +34,6 @@ namespace SkiaCore
 
             _options = options;
 
-            _renderer = new GraphicsRenderer(width, height);
             _queue = new UIQueue();
         }
 
@@ -61,21 +61,21 @@ namespace SkiaCore
             _queue.AddToQueue(action);
         }
 
-        public bool GetWindowError()
-        {
-            if (GLInterface.GetError() == 0 && _renderer.Surface != null)
-                return false;
-
-            return true;
-        }
-
         internal void SetUpInterfaces()
         {
+            _renderer = new GraphicsRenderer(Width, Height);            
+
             GLInterface.InitializeWindow();
 
             WindowPointer = GLInterface.CreateWindowContext(Width, Height, Title);
 
-            //Events.Initialize(WindowPointer);
+            _eventSystem = new Events(WindowPointer);
+            _eventSystem.SetWindowCloseCallback(() =>
+            {
+                GLInterface.DestroyWindow(WindowPointer);
+            });
+
+            _renderer.RegisterOnResize(_eventSystem);
             //InputHandler.Initialize(WindowPointer);
 
             GLInterface.SetUpOptions(_options);
@@ -84,10 +84,10 @@ namespace SkiaCore
 
         internal void Update()
         {
-            if (GLFW.glfwWindowShouldClose(WindowPointer) == 0)
-            {
-                GLInterface.ActivateContext(WindowPointer);
+            GLInterface.ActivateContext(WindowPointer);
 
+            if (GLFW.glfwWindowShouldClose(WindowPointer) == 0)
+            {              
                 _queue.CallDispatch();
 
                 _renderer.Update();

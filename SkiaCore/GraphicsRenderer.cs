@@ -29,8 +29,6 @@ namespace SkiaCore
 
             Width = width;
             Height = height;
-
-            Events.SetFramebufferResizeCallback((w, h) => { Resize(w, h); });
         }
 
         internal void Update()
@@ -42,6 +40,8 @@ namespace SkiaCore
 
             GLInterface.RenderSurface(Surface.PeekPixels().GetPixels(), Width, Height);
         }
+
+        internal void RegisterOnResize(Events e) => e.SetFramebufferResizeCallback((w, h) => { Resize(w, h); });
 
         internal void AddComponent(Component component, Component parent = null)
         {
@@ -78,6 +78,8 @@ namespace SkiaCore
 
             Surface.Dispose();
             Surface = SKSurface.Create(_imageInfo);
+
+            Console.WriteLine("Resize called: " + Surface.Handle);
 
             UpdateLayout();
         }

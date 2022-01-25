@@ -5,36 +5,46 @@ using Arqan;
 
 namespace SkiaCore.GL
 {
-    public static class Events
+    public class Events
     {
-        private static IntPtr _window;
+        private readonly IntPtr _window;
 
-        private static Action _closeCallback;
-        private static Action<int, int> _framebufferResizeCallback;
+        private Action _closeCallback;
+        private Action<int, int> _framebufferResizeCallback;
 
-        internal static void Initialize(IntPtr winPtr)
+        //=========================================================================
+        // The delegates should be cached, otherwise GC automatically removes them.
+        //=========================================================================
+        private GLFW.GLFWframebuffersizefun _frameBufferFunction;
+        private GLFW.GLFWwindowclosefun _windowcloseFunction;
+
+        internal Events(IntPtr winPtr)
         {
             _window = winPtr;
 
+            _frameBufferFunction = (window, width, height) =>
+            {
+                _framebufferResizeCallback?.Invoke(width, height);
+                GL10.glViewport(0, 0, width, height);
+            };
+
+            _windowcloseFunction = (win) => _closeCallback?.Invoke();
+
             GLFW.glfwSetWindowCloseCallback
                 (
-                _window, 
-                (win) => { _closeCallback?.Invoke(); Environment.Exit(0); }
+                    _window,
+                    _windowcloseFunction
                 );
 
             GLFW.glfwSetFramebufferSizeCallback
                 (
-                _window,
-                (window, width, height) => 
-                    {
-                        _framebufferResizeCallback?.Invoke(width, height);
-                        GL10.glViewport(0, 0, width, height);
-                    }
+                    _window,
+                    _frameBufferFunction
                 );
         }
 
-        public static void SetWindowCloseCallback(Action cb) => _closeCallback = cb;
-        public static void SetFramebufferResizeCallback(Action<int, int> cb)
+        public void SetWindowCloseCallback(Action cb) => _closeCallback = cb;
+        public void SetFramebufferResizeCallback(Action<int, int> cb)
             => _framebufferResizeCallback = cb;
     }
 }

@@ -135,7 +135,7 @@ namespace SkiaCore.GL
 
         internal static void Poll()
         {
-            GLFW.glfwWaitEvents();
+            GLFW.glfwPollEvents();
         }
 
         internal static void ActivateContext(IntPtr win)
@@ -152,6 +152,11 @@ namespace SkiaCore.GL
             GL10.glViewport(0, 0, width, height);
             
             return win_ptr;
+        }
+
+        internal static void DestroyWindow(IntPtr window)
+        {
+            GLFW.glfwDestroyWindow(window);
         }
 
         internal static uint GetError()

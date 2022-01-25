@@ -9,8 +9,6 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-[assembly: InternalsVisibleTo("SkiaCoreTests")]
-
 namespace SkiaCore
 {
     public static class Core
