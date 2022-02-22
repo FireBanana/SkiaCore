@@ -12,14 +12,16 @@ namespace SkiaCore
 {
     internal class GraphicsRenderer
     {
-        internal SKSurface Surface { get; private set; }
-        internal Component Root { get; private set; }
+        internal SKSurface                       Surface { get; private set; }
+        internal Component                       Root { get; private set; }
 
-        internal int Width { get; private set; } = 800;
-        internal int Height { get; private set; } = 600;
+        internal int                             Width { get; private set; } = 800;
+        internal int                             Height { get; private set; } = 600;
 
-        private SKImageInfo _imageInfo;
-        private readonly List<ComponentNodePair> _componentNodeList = new List<ComponentNodePair>();
+        private SKImageInfo                      _imageInfo;
+
+        private readonly List<ComponentNodePair> _componentNodeList 
+            = new List<ComponentNodePair>();
 
         public GraphicsRenderer(int width, int height)
         {
@@ -37,11 +39,12 @@ namespace SkiaCore
 
             foreach (var cnPair in _componentNodeList)
                 cnPair.Component.Render(Surface);
-
+            
             GLInterface.RenderSurface(Surface.PeekPixels().GetPixels(), Width, Height);
         }
 
-        internal void RegisterOnResize(Events e) => e.SetFramebufferResizeCallback((w, h) => { Resize(w, h); });
+        internal void RegisterOnResize(Events e) =>
+            e.SetFramebufferResizeCallback((w, h) => { Resize(w, h); });
 
         internal void AddComponent(Component component, Component parent = null)
         {
@@ -68,7 +71,7 @@ namespace SkiaCore
         internal void Resize(int width, int height)
         {
             _imageInfo.Width = width;
-            _imageInfo.Height = height;            
+            _imageInfo.Height = height;
 
             Width = width;
             Height = height;
@@ -76,10 +79,9 @@ namespace SkiaCore
             Root.Width = width;
             Root.Height = height;
 
-            Surface.Dispose();
+            // Open Skia/Skiasharp source to view how data created
+            Surface.Dispose(); 
             Surface = SKSurface.Create(_imageInfo);
-
-            Console.WriteLine("Resize called: " + Surface.Handle);
 
             UpdateLayout();
         }

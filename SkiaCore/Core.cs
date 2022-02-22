@@ -6,14 +6,14 @@ using SkiaSharp;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace SkiaCore
 {
     public static class Core
     {
-        private static readonly List<Window> _windowList = new List<Window>(); 
+        private static readonly List<Window>            _windowList
+            = new List<Window>(); 
 
         private static readonly ConcurrentQueue<Window> _windowQueue 
             = new ConcurrentQueue<Window>();

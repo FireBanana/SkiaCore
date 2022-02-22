@@ -7,16 +7,16 @@ namespace SkiaCore.GL
 {
     public class Events
     {
-        private readonly IntPtr _window;
+        private readonly IntPtr             _window;
 
-        private Action _closeCallback;
-        private Action<int, int> _framebufferResizeCallback;
+        private Action                      _closeCallback;
+        private Action<int, int>            _framebufferResizeCallback;
 
-        //=========================================================================
-        // The delegates should be cached, otherwise GC automatically removes them.
-        //=========================================================================
-        private GLFW.GLFWframebuffersizefun _frameBufferFunction;
-        private GLFW.GLFWwindowclosefun _windowcloseFunction;
+        //===================================================================
+        // The delegates are cached, otherwise GC automatically removes them.
+        //===================================================================
+        private readonly GLFW.GLFWframebuffersizefun _frameBufferFunction;
+        private readonly GLFW.GLFWwindowclosefun     _windowcloseFunction;
 
         internal Events(IntPtr winPtr)
         {
@@ -25,9 +25,11 @@ namespace SkiaCore.GL
             _frameBufferFunction = (window, width, height) =>
             {
                 _framebufferResizeCallback?.Invoke(width, height);
+                GLInterface.ActivateContext(_window);
                 GL10.glViewport(0, 0, width, height);
             };
 
+            // TODO Add Window removal from list
             _windowcloseFunction = (win) => _closeCallback?.Invoke();
 
             GLFW.glfwSetWindowCloseCallback
