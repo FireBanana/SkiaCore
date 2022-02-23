@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30611.23
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkiaCore", "SkiaCore\SkiaCore.csproj", "{441F3FB6-69D5-4DE3-8AA5-6A29DDC6B062}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkiaTest", "..\SkiaTest\SkiaTest\SkiaTest.csproj", "{8EFEDAC2-F68F-4FD0-9ACB-D0FB8AE61BD7}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkiaCoreTests", "SkiaCore.Tests\SkiaCoreTests\SkiaCoreTests.csproj", "{77833FD7-ED87-4AB7-96B4-40A15B08A189}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,22 +51,6 @@ Global
 		{8EFEDAC2-F68F-4FD0-9ACB-D0FB8AE61BD7}.Release|x64.Build.0 = Release|Any CPU
 		{8EFEDAC2-F68F-4FD0-9ACB-D0FB8AE61BD7}.Release|x86.ActiveCfg = Release|Any CPU
 		{8EFEDAC2-F68F-4FD0-9ACB-D0FB8AE61BD7}.Release|x86.Build.0 = Release|Any CPU
-		{77833FD7-ED87-4AB7-96B4-40A15B08A189}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{77833FD7-ED87-4AB7-96B4-40A15B08A189}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{77833FD7-ED87-4AB7-96B4-40A15B08A189}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{77833FD7-ED87-4AB7-96B4-40A15B08A189}.Debug|ARM.Build.0 = Debug|Any CPU
-		{77833FD7-ED87-4AB7-96B4-40A15B08A189}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{77833FD7-ED87-4AB7-96B4-40A15B08A189}.Debug|x64.Build.0 = Debug|Any CPU
-		{77833FD7-ED87-4AB7-96B4-40A15B08A189}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{77833FD7-ED87-4AB7-96B4-40A15B08A189}.Debug|x86.Build.0 = Debug|Any CPU
-		{77833FD7-ED87-4AB7-96B4-40A15B08A189}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{77833FD7-ED87-4AB7-96B4-40A15B08A189}.Release|Any CPU.Build.0 = Release|Any CPU
-		{77833FD7-ED87-4AB7-96B4-40A15B08A189}.Release|ARM.ActiveCfg = Release|Any CPU
-		{77833FD7-ED87-4AB7-96B4-40A15B08A189}.Release|ARM.Build.0 = Release|Any CPU
-		{77833FD7-ED87-4AB7-96B4-40A15B08A189}.Release|x64.ActiveCfg = Release|Any CPU
-		{77833FD7-ED87-4AB7-96B4-40A15B08A189}.Release|x64.Build.0 = Release|Any CPU
-		{77833FD7-ED87-4AB7-96B4-40A15B08A189}.Release|x86.ActiveCfg = Release|Any CPU
-		{77833FD7-ED87-4AB7-96B4-40A15B08A189}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

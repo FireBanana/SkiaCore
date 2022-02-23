@@ -31,7 +31,6 @@ namespace SkiaCore.GL
 
         internal static void InitializeWindow()
         {
-            GLFW.glfwInit();
             GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
             GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
             GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
@@ -43,7 +42,7 @@ namespace SkiaCore.GL
             GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, options.IsNotResizable ? GLFW.GLFW_FALSE : GLFW.GLFW_TRUE);
         }
 
-        internal static void CreateProgram(SKSurface _surface)
+        internal static void CreateProgram(IntPtr surfacePtr, int width, int height)
         {
             GL30.glGenVertexArrays(1, VAO);
             GL30.glBindVertexArray(VAO[0]);
@@ -71,8 +70,7 @@ namespace SkiaCore.GL
             GL10.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
             GL10.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
 
-            var dataPointer = _surface.PeekPixels().GetPixels();
-            GL10.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, GraphicsRenderer.Width, GraphicsRenderer.Height, 0, GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE, dataPointer);
+            GL10.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, width, height, 0, GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE, surfacePtr);
 
             GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
 
@@ -126,18 +124,44 @@ namespace SkiaCore.GL
             GLFW.glfwSwapBuffers(win);
         }
 
+        internal static void RenderSurface(IntPtr textPtr, int width, int height)
+        {
+            GL10.glTexImage2D(
+                GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB,
+                width, height, 0, GL12.GL_BGRA,
+                GL11.GL_UNSIGNED_BYTE, textPtr
+                );
+        }
+
         internal static void Poll()
         {
-            GLFW.glfwWaitEvents();
+            GLFW.glfwPollEvents();
+        }
+
+        internal static void ActivateContext(IntPtr win)
+        {
+            GLFW.glfwMakeContextCurrent(win);
         }
 
         internal static IntPtr CreateWindowContext(int width, int height, string title)
         {
-            var win_ptr = GLFW.glfwCreateWindow(width, height, Encoding.ASCII.GetBytes(title), IntPtr.Zero, IntPtr.Zero);
+            var win_ptr = GLFW.glfwCreateWindow(
+                width, height, Encoding.ASCII.GetBytes(title), IntPtr.Zero, IntPtr.Zero);
+            
             GLFW.glfwMakeContextCurrent(win_ptr);
             GL10.glViewport(0, 0, width, height);
+            
             return win_ptr;
         }
 
+        internal static void DestroyWindow(IntPtr window)
+        {
+            GLFW.glfwDestroyWindow(window);
+        }
+
+        internal static uint GetError()
+        {
+            return GL10.glGetError();
+        }
     }
 }

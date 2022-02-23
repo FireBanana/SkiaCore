@@ -5,82 +5,56 @@ using SkiaCore.GL;
 using SkiaSharp;
 using System;
 using System.Collections.Concurrent;
-using System.Runtime.CompilerServices;
+using System.Collections.Generic;
 using System.Threading;
-
-[assembly: InternalsVisibleTo("SkiaCoreTests")]
 
 namespace SkiaCore
 {
     public static class Core
     {
-        internal static IntPtr Window;   
+        private static readonly List<Window>            _windowList
+            = new List<Window>(); 
 
-        public static void Initialize
-            (int width, int height, string title,
-            SkiaCoreOptions options = new SkiaCoreOptions())
+        private static readonly ConcurrentQueue<Window> _windowQueue 
+            = new ConcurrentQueue<Window>();
+
+        public static void Initialize()
         {
-            var thread = new Thread(() =>
+            var thread = new Thread(() => 
             {
-                InitializeInternal(width, height, title, options);
+                GLFW.glfwInit(); // TODO Move to interface
+                Update();
             });
 
             thread.Start();
         }
 
-        private static void SetUpInterfaces(int width, int height, string title, SkiaCoreOptions options)
+        public static Window CreateWindow
+            (int width, int height, string title,
+            SkiaCoreOptions options = new SkiaCoreOptions())
         {
-            GraphicsRenderer.Initialize(width, height);
-            GLInterface.InitializeWindow();
+            var win = new Window(width, height, title, options);
+            
+            _windowQueue.Enqueue(win);            
 
-            Window = GLInterface.CreateWindowContext(width, height, title);
-
-            Events.Initialize(Window);
-            InputHandler.Initialize(Window);
-
-            GLInterface.SetUpOptions(options);
-            GLInterface.CreateProgram(GraphicsRenderer.Surface);
+            return win;
         }
 
-        private static void InitializeInternal(int width, int height,
-            string title, SkiaCoreOptions options)
+        private static void Update()
         {
-            SetUpInterfaces(width, height, title, options);
-
-            while (GLFW.glfwWindowShouldClose(Window) == 0)
+            while (true)
             {
-                UIQueue.CallDispatch();
+                if (_windowQueue.TryDequeue(out var window))
+                {
+                    window.SetUpInterfaces();
+                    _windowList.Add(window);
+                }
 
-                GraphicsRenderer.Update();
-                InputHandler.Update();
-
-                GLInterface.Draw(Window);
-                GLInterface.Poll();
+                foreach (var win in _windowList)
+                {
+                    win.Update();
+                }
             }
-        }
-
-        public static void AddRenderComponent(Component component, Component parent = null)
-        {
-            UIQueue.AddToQueue(() =>
-            {
-                GraphicsRenderer.AddComponent(component, parent);
-
-                if (component is InteractableComponent)
-                    InputHandler.AddComponent(component as InteractableComponent);
-            });
-        }
-
-        public static void Recalculate()
-        {
-            UIQueue.AddToQueue(() =>
-            {
-                GraphicsRenderer.UpdateLayout();
-            });
-        }
-
-        internal static void ExecuteOnUIThread(Action action)
-        {
-            UIQueue.AddToQueue(action);
         }
     }
 }
