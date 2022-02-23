@@ -35,6 +35,8 @@ namespace SkiaCore
 
         internal void Update()
         {
+            if (Surface == null) return;
+
             Surface.Canvas.Clear(SKColor.Empty);
 
             foreach (var cnPair in _componentNodeList)
@@ -79,8 +81,7 @@ namespace SkiaCore
             Root.Width = width;
             Root.Height = height;
 
-            // Open Skia/Skiasharp source to view how data created
-            Surface.Dispose(); 
+            Surface?.Dispose(); 
             Surface = SKSurface.Create(_imageInfo);
 
             UpdateLayout();

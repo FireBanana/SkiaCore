@@ -3,18 +3,22 @@ using System.Collections.Generic;
 using System.Text;
 using Arqan;
 
+//======================================================================
+// Important notes: Make sure that all the callback functions are cached
+// otherwise the GC will remove them. Also make the context for the
+// window current in each callback otherwise undefined behavior will 
+// occur
+//======================================================================
+
 namespace SkiaCore.GL
 {
     public class Events
     {
-        private readonly IntPtr             _window;
+        private readonly IntPtr                      _window;
 
-        private Action                      _closeCallback;
-        private Action<int, int>            _framebufferResizeCallback;
+        private Action                               _closeCallback;
+        private Action<int, int>                     _framebufferResizeCallback;
 
-        //===================================================================
-        // The delegates are cached, otherwise GC automatically removes them.
-        //===================================================================
         private readonly GLFW.GLFWframebuffersizefun _frameBufferFunction;
         private readonly GLFW.GLFWwindowclosefun     _windowcloseFunction;
 
@@ -24,13 +28,17 @@ namespace SkiaCore.GL
 
             _frameBufferFunction = (window, width, height) =>
             {
-                _framebufferResizeCallback?.Invoke(width, height);
                 GLInterface.ActivateContext(_window);
+                _framebufferResizeCallback?.Invoke(width, height);
                 GL10.glViewport(0, 0, width, height);
             };
 
             // TODO Add Window removal from list
-            _windowcloseFunction = (win) => _closeCallback?.Invoke();
+            _windowcloseFunction = (win) =>
+            {
+                GLInterface.ActivateContext(_window);
+                _closeCallback?.Invoke();
+            };
 
             GLFW.glfwSetWindowCloseCallback
                 (
