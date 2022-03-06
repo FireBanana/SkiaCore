@@ -22,7 +22,7 @@ namespace SkiaCore.Effects
 
             _paint.Color = SKColor.Parse("#ff0000");
             _paint.TextSize = size;
-            _paint.TextAlign = SKTextAlign.Center;
+            _paint.TextAlign = SKTextAlign.Left;
 
             _xOffset = xOffset;
             _yOffset = yOffset;

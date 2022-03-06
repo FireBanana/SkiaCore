@@ -7,18 +7,18 @@ namespace SkiaCore
 {
     internal class UIQueue
     {
-        private readonly Queue<Action> _dispatcherQueue = new Queue<Action>();
+        private readonly Queue<Action<Window>> _dispatcherQueue = new Queue<Action<Window>>();
 
-        internal void CallDispatch()
+        internal void CallDispatch(Window w)
         {
             while (_dispatcherQueue.Count > 0)
             {
-                if (_dispatcherQueue.TryDequeue(out Action res))
-                    res.Invoke();
+                if (_dispatcherQueue.TryDequeue(out Action<Window> res))
+                    res.Invoke(w);
             }
         }
 
-        internal void AddToQueue(Action a)
+        internal void AddToQueue(Action<Window> a)
         {
             _dispatcherQueue.Enqueue(a);
         }

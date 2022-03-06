@@ -39,7 +39,7 @@ namespace SkiaCore
 
         public void AddRenderComponent(Component component, Component parent = null)
         {
-            _queue.AddToQueue(() =>
+            _queue.AddToQueue((win) =>
             {
                 _renderer.AddComponent(component, parent);
 
@@ -50,26 +50,28 @@ namespace SkiaCore
 
         public void Recalculate()
         {
-            _queue.AddToQueue(() =>
+            _queue.AddToQueue((win) =>
             {
                 _renderer.UpdateLayout();
             });
         }
 
-        public void ExecuteOnUIThread(Action action)
+        public void ExecuteOnUIThread(Action<Window> action)
         {
             _queue.AddToQueue(action);
         }
 
         internal void SetUpInterfaces()
         {
-            _renderer = new GraphicsRenderer(Width, Height);            
+            _renderer = new GraphicsRenderer(Width, Height);
 
+            GLInterface.SetUpOptions(_options);
             GLInterface.InitializeWindow();
 
             WindowPointer = GLInterface.CreateWindowContext(Width, Height, Title);
 
             _eventSystem = new Events(WindowPointer);
+
             _eventSystem.SetWindowCloseCallback(() =>
             {
                 GLInterface.DestroyWindow(WindowPointer);
@@ -77,8 +79,7 @@ namespace SkiaCore
 
             _renderer.RegisterOnResize(_eventSystem);
             //InputHandler.Initialize(WindowPointer);
-
-            GLInterface.SetUpOptions(_options);
+            
             GLInterface.CreateProgram(_renderer.Surface.PeekPixels().GetPixels(), Width, Height);
         }
 
@@ -88,7 +89,7 @@ namespace SkiaCore
 
             if (GLFW.glfwWindowShouldClose(WindowPointer) == 0)
             {              
-                _queue.CallDispatch();
+                _queue.CallDispatch(this);
 
                 _renderer.Update();
                 //InputHandler.Update();

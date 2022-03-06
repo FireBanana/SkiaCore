@@ -28,12 +28,12 @@ namespace SkiaCore.Components
 
         public int Width
         {
-            get { return (int)_node.Width.Value; }
+            get { return (int)_node.LayoutWidth; }
             set { _node.Width = value; }
         }
         public int Height
         {
-            get { return (int)_node.Height.Value; }
+            get { return (int)_node.LayoutHeight; }
             set { _node.Height = value; }
         }
 
@@ -67,6 +67,9 @@ namespace SkiaCore.Components
         public void SetFlexDirection(FlexDirection dir) 
             => _node.FlexDirection = (YogaFlexDirection)dir;
 
+        public void SetFlexGrow(float grow)
+            => _node.FlexGrow = grow;
+
         public void SetLayoutDirection(LayoutDirection lDir) 
             => _node.StyleDirection = (YogaDirection)lDir;
 
@@ -85,6 +88,15 @@ namespace SkiaCore.Components
         public void SetAlignContent(Alignment align)
             => _node.AlignContent = (YogaAlign)align;
 
+        public void SetPadding(float val)
+            => _node.Padding = val;
+
+        public void SetHeightAuto()
+            => _node.Height = YogaValue.Auto();
+
+        public void SetWidthAuto()
+            => _node.Width = YogaValue.Auto();
+
         //===========================================================================================
 
         internal void Attach(Component child)
@@ -98,8 +110,8 @@ namespace SkiaCore.Components
                 new SKRect(
                     X,
                     Y,
-                    X + _node.Width.Value,
-                    Y + _node.Height.Value
+                    X + Width,
+                    Y + Height
                     ),
                 _bordersize,
                 _paint
