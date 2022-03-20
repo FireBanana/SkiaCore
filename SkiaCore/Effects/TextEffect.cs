@@ -4,33 +4,92 @@ using SkiaSharp;
 using System.Collections.Generic;
 using System.Text;
 using SkiaCore.Components;
+using SkiaCore.Common;
 
 namespace SkiaCore.Effects
 {
+
+    /// ======================================
+    /// TODO: Add a callback for parent resize
+    /// to make text resize if bigger than
+    /// width.
+    /// ======================================
     public class TextEffect : IEffect
     {
+        // Move to types
+        public enum TextPosition
+        {
+            Left,
+            Center,
+            Right
+        }
+
         private readonly string _text;
         private readonly SKPaint _paint;
+        private readonly TextPosition _position;
 
-        private readonly int _xOffset;
-        private readonly int _yOffset;
-
-        public TextEffect(string txt, float size, int xOffset = 0, int yOffset = 0)
+        public TextEffect(string txt, float size, Color colorHex,
+            TextPosition position = TextPosition.Center)
         {
             _text = txt;
             _paint = new SKPaint();
 
-            _paint.Color = SKColor.Parse("#ff0000");
+            _paint.Color = colorHex.RawColor;
             _paint.TextSize = size;
-            _paint.TextAlign = SKTextAlign.Left;
 
-            _xOffset = xOffset;
-            _yOffset = yOffset;
+            _position = position;
+
+            SetTextAlignment(position);
+        }
+
+        private void SetTextAlignment(TextPosition position)
+        {
+            switch (position)
+            {
+                case TextPosition.Left:
+                    _paint.TextAlign = SKTextAlign.Left;
+                    break;
+
+                case TextPosition.Center:
+                    _paint.TextAlign = SKTextAlign.Center;
+                    break;
+
+                case TextPosition.Right:
+                    _paint.TextAlign = SKTextAlign.Right;
+                    break;
+            }
+        }
+
+        private float ResolveTextHorizontalPosition(TextPosition position, Component component)
+        {
+            switch (position)
+            {
+                case TextPosition.Left:
+                    return 0.0f;
+
+                case TextPosition.Center:
+                    return component.Width / 2;
+
+                case TextPosition.Right:
+                    return component.Width;
+
+                default:
+                    return component.Width / 2;
+            }
         }
 
         void IEffect.Draw(Component component, SKCanvas canvas)
         {
-            canvas.DrawText(_text, new SKPoint(component.X + _xOffset, component.Y + _yOffset), _paint);
+
+            canvas.DrawText
+                (
+                    _text,
+                    new SKPoint(
+                        component.X + ResolveTextHorizontalPosition(_position, component),
+                        component.Y + (component.Height / 2) + (_paint.FontMetrics.XHeight / 2)
+                    ),
+                    _paint
+                );
         }
     }
 }

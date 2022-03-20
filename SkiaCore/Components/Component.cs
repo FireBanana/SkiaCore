@@ -55,8 +55,8 @@ namespace SkiaCore.Components
 
         //================================= SET NODE SPECIFICS ======================================
 
-        public void SetColor(Color color) 
-            => _paint.Color = SKColor.Parse(color.HexValue);
+        public void SetColor(Color color)
+            => _paint.Color = color.RawColor;
 
         public void SetAntiAlias(bool isAA)
             => _paint.IsAntialias = isAA;
@@ -90,6 +90,17 @@ namespace SkiaCore.Components
 
         public void SetPadding(float val)
             => _node.Padding = val;
+
+        public void SetMargin(float val)
+            => _node.Margin = val;
+
+        public void SetMargin(float t, float r, float b, float l)
+        {
+            _node.MarginTop = t;
+            _node.MarginRight = r;
+            _node.MarginBottom = b;
+            _node.MarginLeft = l;
+        }
 
         public void SetHeightAuto()
             => _node.Height = YogaValue.Auto();

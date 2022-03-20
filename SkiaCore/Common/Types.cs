@@ -1,6 +1,7 @@
 ﻿using Facebook.Yoga;
 using SkiaCore.Components;
 using SkiaSharp;
+using SkiaCore.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -32,12 +33,17 @@ namespace SkiaCore.Common
 
     public struct Color
     {
-        public string HexValue;
+        internal readonly SKColor RawColor { get; }
 
         public Color(string hex)
         {
-            HexValue = hex;
-        }
+            if (SKColor.TryParse(hex, out SKColor result))
+            {
+                RawColor = result;
+            }
+            else
+                throw new CoreIncorrectColorException("Incorrect Color value: " + hex);
+        }     
     }
 
     //=============ENUMS=============
